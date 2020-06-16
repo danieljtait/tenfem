@@ -14,6 +14,7 @@
 # ============================================================================
 import tensorflow as tf
 from .shape_functions import p1_shape_fn, p2_shape_fn
+from .gaussian_quadrature import gauss_quad_nodes_and_weights
 
 
 class TriangleElement(object):
@@ -36,8 +37,10 @@ class TriangleElement(object):
 
         if self.degree == 1:
             self._shape_fn = p1_shape_fn
+            self._quadrature_order = 2
         elif self.degree == 2:
             self._shape_fn = p2_shape_fn
+            self._quadrature_order = 4
         else:
             raise NotImplementedError(''.join(
                 ('Only degree p in [1, 2] polynomials currently supported',
@@ -48,5 +51,35 @@ class TriangleElement(object):
         return self._degree
 
     @property
+    def quadrature_order(self):
+        """ The number of nodes for Gaussian quadrature. """
+        return self._quadrature_order
+
+    @property
     def dtype(self):
+        """ Data-type of the element. """
         return self._dtype
+
+    @property
+    def shape_function(self):
+        """ Shape functions on the element. """
+        return self._shape_fn
+
+    def get_quadrature_nodes(self, mesh):
+        """ Get the gaussian quadrature nodes of the mesh.
+
+        Args:
+            mesh: A `tenfem.mesh.BaseMesh` object giving the mesh we want to find the
+              quadrature nodes on.
+
+        Returns:
+            quadrature_nodes: A float `tf.Tensor` of shape
+              `[mesh.n_elements, self.quadrature_order, mesh.spatial_dimension]`
+              giving the coordinates of the quadrature nodes on the mesh.
+
+        """
+        shape_fn = self.shape_function
+        _, quad_nodes = gauss_quad_nodes_and_weights(self.quadrature_order, dtype=self.dtype)
+        element_nodes = tf.gather(mesh.nodes, mesh.elements)
+        shape_fn_vals, shape_fn_grads = shape_fn(quad_nodes[..., 0], quad_nodes[..., 1])
+        return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :] * shape_fn_vals[..., tf.newaxis], axis=-2)
