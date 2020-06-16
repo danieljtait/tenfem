@@ -37,3 +37,32 @@ def p1_shape_fn(r, s):
     dsds = tf.concat([-tf.ones_like(s0), tf.zeros_like(s1), tf.ones_like(s2)], axis=-1)
 
     return shape_fn, tf.concat((dsdr[tf.newaxis, ...], dsds[tf.newaxis, ...]), axis=0)
+
+
+def p2_shape_fn(r, s):
+    """ Shape function of the quadratic Lagrange triangle.
+
+    Args:
+        r: A float `Tensor` of shape [..., n]` the first canonical coordinate on the reference triangle
+        s: A float `Tensor` of shape [..., n]` the second canonical coordinate on the reference triangle.
+
+    Returns:
+        shape_fn: A float `Tensor` of shape `[..., n, 6]` with each `[..., n, i]` the evaluation of the
+          ith shape function
+        shape_fn_grad: The gradient with respect to the canonical coordinates of the shape_fn, a Tensor
+          of shape `[2, ..., n, 6]`.
+    """
+    r = r[..., tf.newaxis]
+    s = s[..., tf.newaxis]
+    s0 = 1. - 3. * r - 3. * s + 2. * r ** 2 + 4. * r * s + 2. * s ** 2
+    s1 = 2. * r ** 2 - r
+    s2 = 2. * s ** 2 - s
+    s3 = 4. * r * s
+    s4 = 4. * s - 4. * r * s - 4. * s ** 2
+    s5 = 4. * r - 4. * r ** 2 - 4. * r * s
+
+    dsdr = tf.concat([-3 + 4 * r + 4 * s, 4 * r - 1, tf.zeros_like(r), 4 * s, -4 * s, 4 - 8 * r - 4 * s], axis=-1)
+    dsds = tf.concat([-3 + 4 * r + 4 * s, tf.zeros_like(r), 4 * s - 1, 4 * r, 4 - 4 * r - 8 * s, -4 * r], axis=-1)
+
+    shape_fn = tf.concat((s0, s1, s2, s3, s4, s5), axis=-1)
+    return shape_fn, tf.concat((dsdr[tf.newaxis, ...], dsds[tf.newaxis, ...]), axis=0)
