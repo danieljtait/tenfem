@@ -25,7 +25,7 @@ def scatter_matrix_to_global(local_values: tf.Tensor,
         local_values: A rank 4 float tensor of shape
         `[batch_size, num_elements, element_dim, element_dim]`
           giving batches of local stiffness matrices defined over the given mesh.
-        mesh: A `bipfem.fem.Mesh` object.
+        mesh: A `tenfem.fem.Mesh` object.
 
     Returns:
         global_matrix: A rank 3 float tensor of shape [batch_size, n_nodes, n_nodes]
@@ -39,3 +39,25 @@ def scatter_matrix_to_global(local_values: tf.Tensor,
     batch_size = tf.shape(local_values)[0]
     shape = [batch_size, mesh.n_nodes, mesh.n_nodes]
     return tf.scatter_nd(indices, updates, shape)
+
+
+def scatter_vector_to_global(local_values, mesh) -> tf.Tensor:
+    """ Scatters local vector values to global load vector.
+
+    Args:
+        local_values: A float `Tensor` of shape
+          `[batch_size, n_elements, element_dim]` giving the values
+          of the local load vector for each shape function.
+        mesh: A `tenfem.mesh.BaseMesh` mesh representing the
+          finite element mesh of the domain.
+
+    Returns:
+        global_load_vector: A float `Tensor` of shape
+         `[batch_size, n_nodes, 1]` giving the values of the local
+         load vector for each node in the mesh.
+    """
+    indices = tenfem.fem.indexing_utils.get_batched_vector_element_indices(mesh.elements[None, ...])
+    updates = tf.reshape(local_values, [-1])
+    batch_size = tf.shape(local_values)[0]
+    shape = [batch_size, mesh.n_nodes]
+    return tf.scatter_nd(indices, updates, shape)[..., tf.newaxis]
