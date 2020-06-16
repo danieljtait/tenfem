@@ -16,4 +16,16 @@
 
 class TriangleElement(object):
     """ Reference element for a triangle mesh. """
-    pass
+
+    def __init__(self, dtype):
+        """
+
+        Args:
+            dtype: (optional) A `tf.DType` giving the data-type of the mesh nodes.
+              Default, None then dtype is inferred from `nodes`.
+        """
+        self._dtype = dtype
+
+    @property
+    def dtype(self):
+        return self._dtype
