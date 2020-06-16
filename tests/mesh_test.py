@@ -37,6 +37,13 @@ class BaseMeshTest(absltest.TestCase):
         bnd_node_inds = mesh.boundary_node_indices.numpy()
         self.assertEmpty(np.setdiff1d(bnd_node_inds, [0, 1, 2, 3]))
 
+    def test_square_triangle_mesh_example(self):
+        nx, ny = (3, 3)
+        tri_mesh = tenfem.mesh.examples.square(nx, ny)
+        self.assertEqual(tri_mesh.n_nodes, nx * ny)
+
+        int_inds = tri_mesh.interior_nodes
+
 
 if __name__ == '__main__':
     absltest.main()

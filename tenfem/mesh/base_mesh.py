@@ -69,6 +69,9 @@ class BaseMesh(tf.Module):
         # compute the indices of boundary nodes
         self._boundary_node_indices = self._get_boundary_node_indices_from_boundary_faces()
 
+        # compute the interior indices
+        self._interior_node_indices = self._get_interior_node_indices()
+
     @property
     def n_nodes(self):
         return tf.shape(self.nodes)[-2]
@@ -112,3 +115,17 @@ class BaseMesh(tf.Module):
         bnd_nodes = tf.numpy_function(
             np.unique, [self.boundary_elements, ], Tout=tf.int32)
         return bnd_nodes
+
+    def _get_interior_node_indices(self):
+        """ Gets the interior indices of the mesh.
+
+        Returns:
+            interior_node_indices: An `integer` tensor of shape `[n_interior_nodes]`
+              representing indices of `self.nodes` which are in the interior.
+        """
+        def diff_nodes(n_nodes, bnd_node_indices):
+            return np.setdiff1d(np.arange(n_nodes), bnd_node_indices)
+
+        return tf.numpy_function(diff_nodes,
+                                 [self.n_nodes, self.boundary_node_indices],
+                                 Tout=tf.int32)
