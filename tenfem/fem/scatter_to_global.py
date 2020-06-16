@@ -18,14 +18,16 @@ import tenfem
 
 
 def scatter_matrix_to_global(local_values: tf.Tensor,
-                             mesh: tenfem.mesh.BaseMesh) -> tf.Tensor:
+                             elements: tf.Tensor,
+                             n_nodes: int) -> tf.Tensor:
     """ Scatters elements of a local tensor to the global.
 
     Args:
         local_values: A rank 4 float tensor of shape
-        `[batch_size, num_elements, element_dim, element_dim]`
+          `[batch_size, num_elements, element_dim, element_dim]`
           giving batches of local stiffness matrices defined over the given mesh.
-        mesh: A `tenfem.fem.Mesh` object.
+        elements: An integer tensor giving the elements of the mesh.
+        n_nodes: integer, the number of nodes of the output matrix.
 
     Returns:
         global_matrix: A rank 3 float tensor of shape [batch_size, n_nodes, n_nodes]
@@ -34,10 +36,10 @@ def scatter_matrix_to_global(local_values: tf.Tensor,
     """
     # ToDo: work out shape checking
     # assert tf.rank(local_values) == 4
-    indices = tenfem.fem.indexing_utils.get_batched_element_indices(mesh.elements[tf.newaxis, ...])
+    indices = tenfem.fem.indexing_utils.get_batched_element_indices(elements)
     updates = tf.reshape(local_values, [-1])
     batch_size = tf.shape(local_values)[0]
-    shape = [batch_size, mesh.n_nodes, mesh.n_nodes]
+    shape = [batch_size, n_nodes, n_nodes]
     return tf.scatter_nd(indices, updates, shape)
 
 
