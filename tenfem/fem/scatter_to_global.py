@@ -26,7 +26,8 @@ def scatter_matrix_to_global(local_values: tf.Tensor,
         local_values: A rank 4 float tensor of shape
           `[batch_size, num_elements, element_dim, element_dim]`
           giving batches of local stiffness matrices defined over the given mesh.
-        elements: An integer tensor giving the elements of the mesh.
+        elements: An rank 3 integer tensor giving the elements of the mesh of shape
+          `[batch_size, num_elements, element_dim]`.
         n_nodes: integer, the number of nodes of the output matrix.
 
     Returns:
