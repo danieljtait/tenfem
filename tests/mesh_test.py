@@ -26,8 +26,14 @@ class BaseMeshTest(absltest.TestCase):
 
     def test_base_mesh_init(self):
         nodes = np.array([[0., 0.], [0., 1.], [1., 1.], [0., 1.]])
-        elems = np.array([[0, 1, 2], [2, 3, 0]])
-        bnd_elems = np.array([[0, 1], [1, 2], [2, 3], [3, 0]])
+        elems = np.array([[0, 1, 2], [2, 3, 0]]).astype(np.int32)
+        bnd_elems = np.array([[0, 1], [1, 2], [2, 3], [3, 0]]).astype(np.int32)
 
         mesh = tenfem.mesh.BaseMesh(nodes, elems, bnd_elems)
-        self.assertIsInstance(mesh.dtype, tf.float64)
+        self.assertEqual(mesh.dtype, np.float64)
+        mesh.cast_nodes(tf.float32)
+        self.assertEqual(mesh.dtype, np.float32)
+
+
+if __name__ == '__main__':
+    absltest.main()

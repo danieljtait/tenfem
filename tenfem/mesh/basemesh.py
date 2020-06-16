@@ -48,7 +48,6 @@ class BaseMesh(tf.Module):
               Default, `base_mesh`.
         """
         super(BaseMesh, self).__init__(name=name)
-        dtype = dtype if None else nodes.dtype
         self._nodes = tf.convert_to_tensor(
             nodes,
             dtype=dtype,
@@ -63,3 +62,18 @@ class BaseMesh(tf.Module):
                 boundary_elements,
                 dtype=tf.int32
         )
+
+    @property
+    def dtype(self):
+        """ dtype of the mesh nodes. """
+        return self.nodes.dtype
+
+    @property
+    def nodes(self):
+        """ Nodes of the mesh. """
+        return self._nodes
+
+    def cast_nodes(self, dtype):
+        """ Cast the node tensors to a new dtype. """
+        self._nodes = tf.cast(self._nodes, dtype)
+
