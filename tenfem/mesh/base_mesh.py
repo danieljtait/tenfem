@@ -53,6 +53,8 @@ class BaseMesh(tf.Module):
             nodes,
             dtype=dtype,
         )
+        if dtype is not None:
+            self.cast_nodes(dtype)
 
         self._elements = tf.convert_to_tensor(
             elements,
