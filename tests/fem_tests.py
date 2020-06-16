@@ -27,12 +27,15 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         element = tenfem.reference_elements.TriangleElement(degree=1)
         mesh = tenfem.mesh.examples.square(2, 2)
         element_dim = tf.shape(mesh.elements)[-1]
-        diff_coeff = tf.ones([3, 1, 4, mesh.n_elements, element_dim])
+
+        batch_shape = [3, 1, 4]
+        diff_coeff = tf.ones(batch_shape + [mesh.n_elements, element_dim])
 
         local_stiffness_mat = tenfem.fem.assemble_local_stiffness_matrix(
             diff_coeff, mesh, element)
 
-        print(local_stiffness_mat.shape)
+        self.assertEqual(batch_shape, tf.shape(local_stiffness_mat).numpy()[:3].tolist())
+
 
 if __name__ == '__main__':
     absltest.main()

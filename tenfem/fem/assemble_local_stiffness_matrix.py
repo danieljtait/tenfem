@@ -38,7 +38,7 @@ def assemble_local_stiffness_matrix(scalar_diffusion_coefficient: tf.Tensor,
     """
     element_nodes = tf.gather(mesh.nodes, mesh.elements)
 
-    wts, quad_nodes = element.get_quadrature_nodes_and_weights(element.get_quadrature_order())
+    wts, quad_nodes = element.get_quadrature_nodes_and_weights()
     _, pf_shape_fn_grad, jac_det = element.isomap(element_nodes, quad_nodes)
 
     wxarea = jac_det * wts / 2
