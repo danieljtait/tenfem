@@ -12,8 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-
-
-class TriangleElement(object):
-    """ Reference element for a triangle mesh. """
-    pass
+from .triangle_element import TriangleElement
