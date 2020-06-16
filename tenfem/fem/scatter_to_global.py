@@ -44,23 +44,27 @@ def scatter_matrix_to_global(local_values: tf.Tensor,
     return tf.scatter_nd(indices, updates, shape)
 
 
-def scatter_vector_to_global(local_values, mesh) -> tf.Tensor:
+def scatter_vector_to_global(local_values: tf.Tensor,
+                             elements: tf.Tensor,
+                             n_nodes: int) -> tf.Tensor:
     """ Scatters local vector values to global load vector.
 
     Args:
         local_values: A float `Tensor` of shape
           `[batch_size, n_elements, element_dim]` giving the values
           of the local load vector for each shape function.
-        mesh: A `tenfem.mesh.BaseMesh` mesh representing the
-          finite element mesh of the domain.
+        elements: An rank 3 integer tensor giving the elements of the mesh of shape
+          `[batch_size, num_elements, element_dim]`.
+        n_nodes: integer, the number of nodes of the output matrix.
 
     Returns:
         global_load_vector: A float `Tensor` of shape
          `[batch_size, n_nodes, 1]` giving the values of the local
          load vector for each node in the mesh.
     """
-    indices = tenfem.fem.indexing_utils.get_batched_vector_element_indices(mesh.elements[None, ...])
+    indices = tenfem.fem.indexing_utils.get_batched_vector_element_indices(
+        elements)
     updates = tf.reshape(local_values, [-1])
     batch_size = tf.shape(local_values)[0]
-    shape = [batch_size, mesh.n_nodes]
+    shape = [batch_size, n_nodes]
     return tf.scatter_nd(indices, updates, shape)[..., tf.newaxis]
