@@ -90,16 +90,19 @@ class TriangleElement(object):
 
         Args:
             nodes: A batched tensor of shape [..., element_dim, 2]
-            canonical_coordinates: A tensor of shape [p, 2] where p is the number of shape
+            canonical_coordinates: A tensor of shape [n, 2] where p is the number of shape
               functions for the given element.
 
         Returns:
-            shape_fn_vals: The values of the shape functions at the canonical coordinates.
-            pushfwd_shape_fn_grad: The gradient of shape functions in the physical coordinates.
-            jacobian_det: A float `Tensor` of shape `[..., p]` giving the jacobian
-              determinant of the coordinate transform.
+            shape_fn_vals: The values of the shape functions at the canonical coordinates. This
+              will be a tensor of shape [p, element_dim]
+            pushfwd_shape_fn_grad: The gradient of shape functions in the physical coordinates. This
+              will be a tensor of shape `[2, ..., n, ]`
+            jacobian_det: A float `Tensor` of shape `[..., n]` giving the jacobian
+              determinant of the coordinate transform at each canonical coordinate.
         """
-        r, s = tf.split(canonical_coordinates, num_or_size_splits=2, axis=-1)
+        r = canonical_coordinates[..., 0]
+        s = canonical_coordinates[..., 1]
         shape_fn_vals, shape_fn_grad = self.shape_function(r, s)
 
         x = nodes[..., 0][..., tf.newaxis, :]
