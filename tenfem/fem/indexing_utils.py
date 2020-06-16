@@ -40,3 +40,17 @@ def get_batched_element_indices(elements: tf.Tensor,
 
     indices = tf.concat([batch_indices, i1, i2], axis=-1)
     return indices
+
+
+def get_batched_vector_element_indices(elements):
+    """ Get the indices for batch scattering of local vectors. """
+    elements_shape = tf.shape(elements)
+    batch_size = elements_shape[0]
+    n_elements = elements_shape[1]
+    element_dim = elements_shape[-1]
+
+    element_indices = tf.reshape(elements, [-1, 1])
+    batch_indices = tf.repeat(tf.range(batch_size), element_dim * n_elements)[:, tf.newaxis]
+
+    indices = tf.concat([batch_indices, element_indices], axis=-1)
+    return indices
