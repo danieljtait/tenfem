@@ -65,7 +65,7 @@ class BaseMesh(tf.Module):
         )
 
         # compute the indices of boundary nodes
-        self._boundary_node_indices = self._get_boundary_node_indices()
+        self._boundary_node_indices = self._get_boundary_node_indices_from_boundary_faces()
 
     @property
     def n_nodes(self):
@@ -100,8 +100,8 @@ class BaseMesh(tf.Module):
         """ Cast the node tensors to a new dtype. """
         self._nodes = tf.cast(self._nodes, dtype)
 
-    def _get_boundary_node_indices(self):
-        """ Gets the indices of boundary nodes.
+    def _get_boundary_node_indices_from_boundary_faces(self):
+        """ Gets the indices of boundary nodes from the boundary faces.
 
         Returns:
             boundary_node_indices: An `integer` tensor of shape `[n_boundary_nodes]`
