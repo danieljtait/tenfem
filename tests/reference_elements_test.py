@@ -35,7 +35,7 @@ class TriangleElementTest(absltest.TestCase):
 
     def test_quadrature_nodes(self):
         element = tenfem.reference_elements.TriangleElement(degree=1)
-        mesh = tenfem.mesh.examples.square(3, 3)
+        mesh = tenfem.mesh.examples.square(2, 2)
         quad_nodes = element.get_quadrature_nodes(mesh)
         np.testing.assert_allclose(tf.shape(quad_nodes), [mesh.n_elements, 3, 2])
 

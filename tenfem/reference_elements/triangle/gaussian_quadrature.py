@@ -22,6 +22,17 @@ def gauss_quad_nodes_and_weights(order: int, dtype: tf.DType = tf.float32):
         order: Python integer, the number of quadrature nodes.
         dtype: A `tf.DType` object giving the data-type of the quadrature nodes
           and weights.
+
+    Returns:
+        weights: A float `Tensor` like giving the weights of the
+          gaussian quadrature rule of `order`, with data-type equal
+          to `dtype`.
+        nodes: A float `Tensor` giving the nodes of the Gaussian
+          quadrature rule of shape [len(weights), 2], with data-type
+          equal to `dtype`.
+
+    Raises:
+        NotImplementedError: If order is not in [1, 2, 3, 4].
     """
     if order == 1:
         weights = tf.constant([1], dtype=dtype)
