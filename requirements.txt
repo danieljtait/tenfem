@@ -1,5 +1,5 @@
 matplotlib
 six
 numpy
-tensorflow >= 2.0
+tensorflow >= 2.1
 tensorflow_probability

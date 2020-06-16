@@ -36,6 +36,10 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
 
         self.assertEqual(batch_shape, tf.shape(local_stiffness_mat).numpy()[:3].tolist())
 
+        global_stiffness_mat = tenfem.fem.scatter_matrix_to_global(
+            local_stiffness_mat, mesh)
+        print(global_stiffness_mat.shape)
+
     def test_assemble_local_load_vector(self):
         element = tenfem.reference_elements.TriangleElement(degree=1)
         mesh = tenfem.mesh.examples.square(2, 2)

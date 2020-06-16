@@ -32,6 +32,6 @@ setup(
     long_description=read('README.md'),
     license='Apache 2.0',
     packages=find_packages(),
-    install_requires=['tensorflow>=2.0', 'tensorflow_probability'],
+    install_requires=['tensorflow>=2.1', 'tensorflow_probability'],
     keywords='probability bayesian finite-element-method machine learning '
 )
