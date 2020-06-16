@@ -20,6 +20,7 @@ import tensorflow as tf
 
 import numpy as np
 
+
 class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
 
     def test_assemble_local_stiffness_matrix(self):
@@ -28,8 +29,10 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         element_dim = tf.shape(mesh.elements)[-1]
         diff_coeff = tf.ones([3, 1, 4, mesh.n_elements, element_dim])
 
+        local_stiffness_mat = tenfem.fem.assemble_local_stiffness_matrix(
+            diff_coeff, mesh, element)
 
-
+        print(local_stiffness_mat.shape)
 
 if __name__ == '__main__':
     absltest.main()

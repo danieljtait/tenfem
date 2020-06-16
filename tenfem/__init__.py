@@ -14,3 +14,4 @@
 # ============================================================================
 from . import mesh
 from . import reference_elements
+from . import fem
