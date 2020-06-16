@@ -16,6 +16,9 @@ from tenfem.mesh import BaseMesh
 import tensorflow as tf
 
 
+__all__ = ['TriangleMesh', ]
+
+
 class TriangleMesh(BaseMesh):
     """ Triangle mesh in R2. """
 
