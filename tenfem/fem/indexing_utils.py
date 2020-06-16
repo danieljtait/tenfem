@@ -39,7 +39,6 @@ def get_batched_element_indices(elements: tf.Tensor,
     batch_indices = tf.repeat(tf.range(batch_size), element_dim ** 2 * n_elements)[:, tf.newaxis]
 
     indices = tf.concat([batch_indices, i1, i2], axis=-1)
-    print(indices)
     return indices
 
 
