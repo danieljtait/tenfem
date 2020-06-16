@@ -33,6 +33,12 @@ class TriangleElementTest(absltest.TestCase):
         element = tri_elem_clz(degree=2, dtype=tf.float64)
         self.assertEqual(element.dtype, np.float64)
 
+    def test_quadrature_nodes(self):
+        element = tenfem.reference_elements.TriangleElement(degree=1)
+        mesh = tenfem.mesh.examples.square(3, 3)
+        quad_nodes = element.get_quadrature_nodes(mesh)
+        np.testing.assert_allclose(tf.shape(quad_nodes), [mesh.n_elements, 3, 2])
+
 
 if __name__ == '__main__':
     absltest.main()

@@ -92,6 +92,10 @@ class BaseMesh(tf.Module):
         return self._elements
 
     @property
+    def n_elements(self):
+        return tf.shape(self.elements)[-2]
+
+    @property
     def boundary_elements(self):
         """ Boundary elements of the mesh. """
         return self._boundary_elements
