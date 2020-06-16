@@ -16,6 +16,7 @@
 import abc
 import six
 import tensorflow as tf
+import numpy as np
 
 __all__ = ['BaseMesh', ]
 
@@ -63,6 +64,9 @@ class BaseMesh(tf.Module):
                 dtype=tf.int32
         )
 
+        # compute the indices of boundary nodes
+        self._boundary_node_indices = self._get_boundary_node_indices()
+
     @property
     def dtype(self):
         """ dtype of the mesh nodes. """
@@ -73,7 +77,32 @@ class BaseMesh(tf.Module):
         """ Nodes of the mesh. """
         return self._nodes
 
+    @property
+    def elements(self):
+        """ Elements of the mesh. """
+        return self._elements
+
+    @property
+    def boundary_elements(self):
+        """ Boundary elements of the mesh. """
+        return self._boundary_elements
+
+    @property
+    def boundary_node_indices(self):
+        """ Indices of the boundary nodes of the mesh. """
+        return self._boundary_node_indices
+
     def cast_nodes(self, dtype):
         """ Cast the node tensors to a new dtype. """
         self._nodes = tf.cast(self._nodes, dtype)
 
+    def _get_boundary_node_indices(self):
+        """ Gets the indices of boundary nodes.
+
+        Returns:
+            boundary_node_indices: An `integer` tensor of shape `[n_boundary_nodes]`
+              formed by taking the unique elements from `self.boundary_elements`
+        """
+        bnd_nodes = tf.numpy_function(
+            np.unique, [self.boundary_elements, ], Tout=tf.int32)
+        return bnd_nodes

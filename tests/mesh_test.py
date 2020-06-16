@@ -34,6 +34,9 @@ class BaseMeshTest(absltest.TestCase):
         mesh.cast_nodes(tf.float32)
         self.assertEqual(mesh.dtype, np.float32)
 
+        bnd_node_inds = mesh.boundary_node_indices.numpy()
+        self.assertEmpty(np.setdiff1d(bnd_node_inds, [0, 1, 2, 3]))
+
 
 if __name__ == '__main__':
     absltest.main()
