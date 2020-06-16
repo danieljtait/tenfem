@@ -85,6 +85,22 @@ class TriangleElement(object):
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
                              * shape_fn_vals[..., tf.newaxis], axis=-2)
 
+    def get_quadrature_nodes_and_weights(self):
+        """ The nodes and weights for Gaussian quadrature on a triangle element.
+
+        Returns:
+            weights: A float `Tensor` like giving the weights of the
+              gaussian quadrature rule of `self.quadrature_order`, with data-type equal
+              to `dtype`.
+            nodes: A float `Tensor` giving the nodes of the Gaussian
+              quadrature rule of shape [len(weights), 2], with data-type
+              equal to `dtype`.
+
+        Raises:
+            NotImplementedError: If order is not in [1, 2, 3, 4].
+        """
+        return gauss_quad_nodes_and_weights(self.quadrature_order, self.dtype)
+
     def isomap(self, nodes, canonical_coordinates):
         """ Transform from canonical coordinates to the elements given by nodes.
 
