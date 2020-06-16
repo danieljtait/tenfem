@@ -14,3 +14,4 @@
 # ============================================================================
 """ Methods for implementing FEM solvers. """
 from .assemble_local_stiffness_matrix import assemble_local_stiffness_matrix
+from .assemble_local_load_vector import assemble_local_load_vector
