@@ -12,3 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+import tensorflow as tf
+
+
+def p1_shape_fn(r, s):
+    """ Shape function of the linear Lagrange polynomial on a Triangle element.
+
+    Args:
+        r: A float `Tensor` of shape [..., n]` the first canonical coordinate on the reference triangle
+        s: A float `Tensor` of shape [..., n]` the second canonical coordinate on the reference triangle.
+
+    Returns:
+        shape_fn: A float `Tensor` of shape `[..., n, 3]` with each `[..., n, i]` the evaluation of the
+          ith shape function
+        shape_fn_grad: The gradient with respect to the canoncial coordinates of the shape_fn, a Tensor
+          of shape `[2, ..., n, 3]`.
+    """
+    s0 = (1. - r - s)[..., tf.newaxis]
+    s1 = r[..., tf.newaxis]
+    s2 = s[..., tf.newaxis]
+
+    shape_fn = tf.concat((s0, s1, s2), axis=-1)
+    dsdr = tf.concat([-tf.ones_like(s0), tf.ones_like(s1), tf.zeros_like(s2)], axis=-1)
+    dsds = tf.concat([-tf.ones_like(s0), tf.zeros_like(s1), tf.ones_like(s2)], axis=-1)
+
+    return shape_fn, tf.concat((dsdr[tf.newaxis, ...], dsds[tf.newaxis, ...]), axis=0)
