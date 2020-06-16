@@ -13,3 +13,4 @@
 # limitations under the License.
 # ============================================================================
 """ Methods for implementing FEM solvers. """
+from .assemble_local_stiffness_matrix import assemble_local_stiffness_matrix
