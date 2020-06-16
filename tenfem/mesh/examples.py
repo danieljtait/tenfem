@@ -36,4 +36,8 @@ def square(nx, ny, dtype=tf.float32):
     nodes = np.column_stack((xx.ravel(), yy.ravel()))
     tri = Delaunay(nodes)
 
-    return TriangleMesh(tri.points, tri.simplices, tri.convex_hull, dtype=dtype)
+    tri_mesh = TriangleMesh(tri.points, tri.simplices, tri.convex_hull, dtype=dtype)
+    tri_mesh.add_matplotlib_tri()
+
+    return tri_mesh
+

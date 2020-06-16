@@ -101,6 +101,19 @@ class BaseMesh(tf.Module):
         """ Indices of the boundary nodes of the mesh. """
         return self._boundary_node_indices
 
+    @property
+    def interior_node_indices(self):
+        """ Indices of the interior nodes of the mesh. """
+        return self._interior_node_indices
+
+    @property
+    def interior_nodes(self):
+        return tf.gather(self.nodes, self.interior_node_indices)
+
+    @property
+    def boundary_nodes(self):
+        return tf.gather(self.nodes, self.boundary_node_indices)
+
     def cast_nodes(self, dtype):
         """ Cast the node tensors to a new dtype. """
         self._nodes = tf.cast(self._nodes, dtype)

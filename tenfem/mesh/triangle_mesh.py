@@ -14,6 +14,7 @@
 # ============================================================================
 from tenfem.mesh import BaseMesh
 import tensorflow as tf
+import matplotlib.tri as tri
 
 
 __all__ = ['TriangleMesh', ]
@@ -26,3 +27,12 @@ class TriangleMesh(BaseMesh):
     def spatial_dimension(self):
         """ Spatial dimension of triangle mesh embedding. """
         return tf.constant(2, dtype=tf.int32)
+
+    def add_matplotlib_tri(self):
+        """ Add a matplotlib triangulation to the mesh as an attribute.
+
+        Adds the matplotlib triangulation to the triangle mesh object
+          `mesh`, which can then be accessed from `mesh._triang`.
+        """
+        triang = tri.Triangulation(*self.nodes.numpy().T, triangles=self.elements[..., :3])
+        setattr(self, '_triang', triang)

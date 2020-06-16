@@ -1,3 +1,4 @@
+matplotlib
 six
 numpy
 tensorflow >= 2.0
