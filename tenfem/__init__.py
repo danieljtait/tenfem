@@ -13,3 +13,4 @@
 # limitations under the License.
 # ============================================================================
 from . import mesh
+from . import reference_elements

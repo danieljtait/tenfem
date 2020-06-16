@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+import tensorflow as tf
 
 
 class TriangleElement(object):
     """ Reference element for a triangle mesh. """
 
-    def __init__(self, dtype):
+    def __init__(self, dtype=tf.float32):
         """
 
         Args:
             dtype: (optional) A `tf.DType` giving the data-type of the mesh nodes.
-              Default, None then dtype is inferred from `nodes`.
+              Default, None then dtype defaults to `tf.float32`.
         """
         self._dtype = dtype
 

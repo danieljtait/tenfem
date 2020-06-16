@@ -19,3 +19,17 @@ import tenfem
 import tensorflow as tf
 
 import numpy as np
+
+
+class TriangleElementTest(absltest.TestCase):
+
+    def test_triangle_element_init(self):
+        element = tenfem.reference_elements.TriangleElement()
+        self.assertEqual(element.dtype, np.float32)
+
+        element = tenfem.reference_elements.TriangleElement(dtype=tf.float64)
+        self.assertEqual(element.dtype, np.float64)
+
+
+if __name__ == '__main__':
+    absltest.main()

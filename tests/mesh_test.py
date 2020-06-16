@@ -39,6 +39,7 @@ class BaseMeshTest(absltest.TestCase):
 
 
 class TriangleMeshTest(absltest.TestCase):
+
     def test_square_triangle_mesh_example(self):
         nx, ny = (3, 3)
         tri_mesh = tenfem.mesh.examples.square(nx, ny)
