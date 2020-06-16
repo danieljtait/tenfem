@@ -88,6 +88,8 @@ class TriangleElement(object):
     def isomap(self, nodes, canonical_coordinates):
         """ Transform from canonical coordinates to the elements given by nodes.
 
+        ToDo: Add tests to isomap
+
         Args:
             nodes: A batched tensor of shape [..., element_dim, 2]
             canonical_coordinates: A tensor of shape [n, 2] where p is the number of shape
