@@ -24,10 +24,13 @@ import numpy as np
 class TriangleElementTest(absltest.TestCase):
 
     def test_triangle_element_init(self):
-        element = tenfem.reference_elements.TriangleElement()
+        tri_elem_clz = tenfem.reference_elements.TriangleElement
+        self.assertRaises(NotImplementedError, lambda: tri_elem_clz(degree=3))
+
+        element = tri_elem_clz(degree=1)
         self.assertEqual(element.dtype, np.float32)
 
-        element = tenfem.reference_elements.TriangleElement(dtype=tf.float64)
+        element = tri_elem_clz(degree=2, dtype=tf.float64)
         self.assertEqual(element.dtype, np.float64)
 
 

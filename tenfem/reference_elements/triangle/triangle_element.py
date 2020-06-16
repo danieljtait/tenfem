@@ -13,19 +13,39 @@
 # limitations under the License.
 # ============================================================================
 import tensorflow as tf
+from .shape_functions import p1_shape_fn, p2_shape_fn
 
 
 class TriangleElement(object):
     """ Reference element for a triangle mesh. """
-
-    def __init__(self, dtype=tf.float32):
+    def __init__(self, degree: int, dtype: tf.DType = tf.float32):
         """
 
         Args:
+            degree: A python integer giving the degree of the polynomials on this
+              function space.
             dtype: (optional) A `tf.DType` giving the data-type of the mesh nodes.
               Default, None then dtype defaults to `tf.float32`.
+
+        Raises:
+            NotImplementedError: If `degree` is not in [1, 2]. Only linear and
+              quadratic shape functions currently implemented.
         """
+        self._degree = degree
         self._dtype = dtype
+
+        if self.degree == 1:
+            self._shape_fn = p1_shape_fn
+        elif self.degree == 2:
+            self._shape_fn = p2_shape_fn
+        else:
+            raise NotImplementedError(''.join(
+                ('Only degree p in [1, 2] polynomials currently supported',
+                 'for TriangleElement')))
+
+    @property
+    def degree(self):
+        return self._degree
 
     @property
     def dtype(self):
