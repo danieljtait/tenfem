@@ -51,10 +51,16 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         batch_shape = [3, 1, 4]
         source = tf.ones(batch_shape + [mesh.n_elements, element_dim])
 
-        local_stiffness_mat = tenfem.fem.assemble_local_load_vector(
+        local_load_vector = tenfem.fem.assemble_local_load_vector(
             source, mesh, element)
 
-        self.assertEqual(batch_shape, tf.shape(local_stiffness_mat).numpy()[:3].tolist())
+        self.assertEqual(batch_shape, tf.shape(local_load_vector).numpy()[:3].tolist())
+
+        batch_size = tf.shape(local_load_vector)[0]
+        elements = tf.tile(mesh.elements[tf.newaxis, ...], [batch_size, 1, 1])
+
+        global_load_vector = tenfem.fem.scatter_vector_to_global(
+            local_load_vector, elements, mesh.n_nodes)
 
 
 if __name__ == '__main__':
