@@ -42,7 +42,8 @@ class BaseMeshTest(absltest.TestCase):
         tri_mesh = tenfem.mesh.examples.square(nx, ny)
         self.assertEqual(tri_mesh.n_nodes, nx * ny)
 
-        int_inds = tri_mesh.interior_nodes
+        int_nodes = tri_mesh.interior_nodes
+        np.testing.assert_allclose(int_nodes, np.array([[0.5, 0.5], ]))
 
 
 if __name__ == '__main__':
