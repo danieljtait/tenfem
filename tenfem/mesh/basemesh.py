@@ -68,6 +68,10 @@ class BaseMesh(tf.Module):
         self._boundary_node_indices = self._get_boundary_node_indices()
 
     @property
+    def n_nodes(self):
+        return tf.shape(self.nodes)[-2]
+
+    @property
     def dtype(self):
         """ dtype of the mesh nodes. """
         return self.nodes.dtype
