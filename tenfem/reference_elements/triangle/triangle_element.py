@@ -84,3 +84,40 @@ class TriangleElement(object):
         shape_fn_vals, shape_fn_grads = shape_fn(quad_nodes[..., 0], quad_nodes[..., 1])
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
                              * shape_fn_vals[..., tf.newaxis], axis=-2)
+
+    def isomap(self, nodes, canonical_coordinates):
+        """ Transform from canonical coordinates to the elements given by nodes.
+
+        Args:
+            nodes: A batched tensor of shape [..., element_dim, 2]
+            canonical_coordinates: A tensor of shape [p, 2] where p is the number of shape
+              functions for the given element.
+
+        Returns:
+            shape_fn_vals: The values of the shape functions at the canonical coordinates.
+            pushfwd_shape_fn_grad: The gradient of shape functions in the physical coordinates.
+            jacobian_det: A float `Tensor` of shape `[..., p]` giving the jacobian
+              determinant of the coordinate transform.
+        """
+        r, s = tf.split(canonical_coordinates, num_or_size_splits=2, axis=-1)
+        shape_fn_vals, shape_fn_grad = self.shape_function(r, s)
+
+        x = nodes[..., 0][..., tf.newaxis, :]
+        y = nodes[..., 1][..., tf.newaxis, :]
+
+        j11 = tf.reduce_sum(shape_fn_grad[0] * x, axis=-1)
+        j12 = tf.reduce_sum(shape_fn_grad[0] * y, axis=-1)
+        j21 = tf.reduce_sum(shape_fn_grad[1] * x, axis=-1)
+        j22 = tf.reduce_sum(shape_fn_grad[1] * y, axis=-1)
+
+        jacobian_det = j11 * j22 - j12 * j21
+
+        dSdx = (j22[..., tf.newaxis] * shape_fn_grad[0]
+                - j12[..., tf.newaxis] * shape_fn_grad[1]) / jacobian_det[..., tf.newaxis]
+        dSdy = (-j21[..., tf.newaxis] * shape_fn_grad[0]
+                + j11[..., tf.newaxis] * shape_fn_grad[1]) / jacobian_det[..., tf.newaxis]
+
+        pushfwd_shape_fn_grad = tf.concat((dSdx[tf.newaxis, ...],
+                                           dSdy[tf.newaxis, ...]), axis=0)
+
+        return shape_fn_vals, pushfwd_shape_fn_grad, jacobian_det
