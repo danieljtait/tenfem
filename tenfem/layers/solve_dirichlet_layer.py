@@ -21,9 +21,10 @@ from tenfem.layers import BaseFEMLayer
 class SolveDirichletProblem(BaseFEMLayer):
     def __init__(self,
                  boundary_condition,
-                 name='solve_dirichlet_problem'):
+                 name='solve_dirichlet_problem',
+                 *args, **kwargs):
         super(SolveDirichletProblem, self).__init__(
-            name=name)
+            *args, **kwargs, name=name)
         self._boundary_condition = boundary_condition
 
     @property
