@@ -17,7 +17,7 @@ from .shape_functions import p1_shape_fn, p2_shape_fn
 from .gaussian_quadrature import gauss_quad_nodes_and_weights
 
 
-class TriangleElement(object):
+class TriangleElement(tf.Module):
     """ Reference element for a triangle mesh. """
     def __init__(self, degree: int, dtype: tf.DType = tf.float32):
         """
@@ -32,6 +32,7 @@ class TriangleElement(object):
             NotImplementedError: If `degree` is not in [1, 2]. Only linear and
               quadratic shape functions currently implemented.
         """
+        super(TriangleElement, self).__init__(name='triangle_element')
         self._degree = degree
         self._dtype = dtype
 
@@ -87,6 +88,7 @@ class TriangleElement(object):
         """
         shape_fn = self.shape_function
         _, quad_nodes = gauss_quad_nodes_and_weights(self.quadrature_order, dtype=self.dtype)
+
         element_nodes = tf.gather(mesh.nodes, mesh.elements)
         shape_fn_vals, shape_fn_grads = shape_fn(quad_nodes[..., 0], quad_nodes[..., 1])
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]

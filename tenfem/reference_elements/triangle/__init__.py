@@ -13,3 +13,4 @@
 # limitations under the License.
 # ============================================================================
 from .triangle_element import TriangleElement
+from .gaussian_quadrature import gauss_quad_nodes_and_weights

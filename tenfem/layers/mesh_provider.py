@@ -16,7 +16,7 @@ import tensorflow as tf
 from tenfem.layers import BaseFEMLayer
 
 
-class MeshProvider(tf.keras.layers.Layer):
+class MeshProvider(BaseFEMLayer):
     """ Layer to provide a mesh. """
     def __init__(self,
                  mesh,
@@ -27,7 +27,6 @@ class MeshProvider(tf.keras.layers.Layer):
         """ Create a MeshProvider instance. """
         super(MeshProvider, self).__init__(reference_element,
                                            name=name)
-
         element_dim = tf.shape(mesh.elements)[-1]
         # shape checking of elements
         if element_dim != reference_element.element_dim:
