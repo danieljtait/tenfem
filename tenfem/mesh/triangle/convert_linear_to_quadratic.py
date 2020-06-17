@@ -65,8 +65,6 @@ def _convert_linear_to_quadratic(nodes, elements, boundary_elements):
                 node_coords = 0.5 * (nodes[start] + nodes[stop])
                 new_nodes.append(node_coords)
 
-            new_edge = [start, split_node_id]
-
             if is_in_edge_set(start, stop, bnd_edge_set):
                 new_boundary_elements.extend(([start, split_node_id],
                                               [split_node_id, stop]))
