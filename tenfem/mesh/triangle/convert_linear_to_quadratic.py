@@ -13,105 +13,83 @@
 # limitations under the License.
 # ============================================================================
 """ Convert a triangle mesh to one that can support degree 2 polynomial elements. """
-import itertools
 import tensorflow as tf
 import numpy as np
+import tenfem
 
 
-def build_adjacency_matrix(nodes: np.ndarray, elements: np.ndarray) -> np.ndarray:
-    """ Builds the adjacency matrix for a set of triangular elements.
+def _convert_linear_to_quadratic(nodes, elements, boundary_elements):
+    """ numpy implementation. """
 
-    Note these are numpy implementations of functions which won't
-    need to be differentiated through.
+    def is_in_edge_set(i, j, edge_set):
+        """ Utility function to check if key in set with permutation. """
+        try:
+            _ = edge_set[(i, j)]
+            return True
+        except KeyError:
+            try:
+                _ = edge_set[(j, i)]
+                return True
+            except KeyError:
+                return False
 
-    Args:
-        nodes: Array like shape `[n_nodes, 2]`.
-        elements: Array like of shape `[n_nodes, 3]`.
+    # create a hash-table for edges on the boundary
+    bnd_edge_set = {(x[0], x[1]): True for x in boundary_elements}
+    edge_set = {}
 
-    Returns:
-        adjacenvy_matrix: Array like of shape `[n_nodes, n_nodes]` giving
-          the mesh adjacency structure determined by nodes and their edges.
+    node_id = nodes.shape[-2]  # start counting from n_nodes
+    new_nodes = []
+    new_elements = []
+    new_boundary_elements = []
 
-    """
-    n_nodes = nodes.shape[0]
-    i, j, k = elements.T
-    adj = np.zeros([n_nodes]*2)
-    adj[j, k] = -1.
-    adj[i, k] = -1.
-    adj[i, j] = -1.
-    adj = -1. * ((adj + adj.T) < 0)
-    return adj
+    for elem in elements:
+        new_elem_nodes = []
+        for cnt, start in enumerate(elem):
+            if cnt == 2:
+                stop = elem[0]
+            else:
+                stop = elem[cnt + 1]
 
+            if is_in_edge_set(start, stop, edge_set):
+                try:
+                    split_node_id = edge_set[(start, stop)]
+                except KeyError:
+                    split_node_id = edge_set[(stop, start)]
+            else:
+                # We need to create a new node
+                edge_set[(start, stop)] = node_id
+                split_node_id = node_id
+                node_id += 1
 
-def _linear_trimesh_to_quadratic(nodes, elements, boundary_node_indices):
-    """ Convert a mesh designed for linear elements to one suited for quadratic. """
-    n_nodes = nodes.shape[0]
-    n_elements = elements.shape[0]
+                # and get the coordinates of the new node
+                node_coords = 0.5 * (nodes[start] + nodes[stop])
+                new_nodes.append(node_coords)
 
-    adj = build_adjacency_matrix(nodes, elements)
+            new_edge = [start, split_node_id]
 
-    # process the adjacency matrix to find edges
-    triu_adj = np.triu(adj)  # use only the upper triangle
-    edge_dict = {i: np.where(triu_adj[i] < 0)[0] for i in range(n_nodes)}
+            if is_in_edge_set(start, stop, bnd_edge_set):
+                new_boundary_elements.extend(([start, split_node_id],
+                                              [split_node_id, stop]))
+            new_elem_nodes.append(split_node_id)
+        a, b, c = new_elem_nodes
+        new_elem = elem.tolist() + [b, c, a]
+        new_elements.append(new_elem)
 
-    edge_node_indices = np.asarray(
-        list(itertools.chain.from_iterable(
-            [zip([key] * len(item), item) for key, item in edge_dict.items()])))
+    new_nodes = np.row_stack((nodes, new_nodes)).astype(nodes.dtype)
+    new_elements = np.array(new_elements).astype(np.int32)
+    new_boundary_elements = np.array(new_boundary_elements).astype(np.int32)
 
-    # reassemble the adjacency matrix with new numbering, this is used to count unique edges.
-    adj = np.zeros([n_nodes] * 2).astype(np.int32)
-    adj[edge_node_indices[:, 0], edge_node_indices[:, 1]] = range(len(edge_node_indices))
-    adj = adj + adj.T
-
-    # collect those edges which start and finish at a boundary node
-    new_bnd_node_edges = np.logical_and(
-        np.isin(edge_node_indices[:, 0], boundary_node_indices),
-        np.isin(edge_node_indices[:, 1], boundary_node_indices))
-
-    new_boundary_node_indices = adj[edge_node_indices[new_bnd_node_edges, 0],
-                                    edge_node_indices[new_bnd_node_edges, 1]]
-    new_boundary_node_indices += n_nodes  # start the counting at n_nodes
-
-    # start finding edge mid points to create new nodes
-    # change edges to be the new nodes -- indexing starts at n_nodes + 1
-    edges = np.zeros([n_elements, 3]).astype(np.int32)
-    for k in range(n_elements):
-        edges[k, :] = [adj[elements[k, 1], elements[k, 2]],
-                       adj[elements[k, 0], elements[k, 2]],
-                       adj[elements[k, 0], elements[k, 1]]]
-    edges = edges + n_nodes
-    num_edges = edge_node_indices.shape[0]
-
-    i, j, k = elements.T  # unpack elements
-    new_nodes = np.zeros([n_nodes + num_edges, 2])
-    new_nodes[:n_nodes] = nodes.copy()
-
-    xcoord0 = 0.5 * (nodes[j, 0] + nodes[k, 0])
-    ycoord0 = 0.5 * (nodes[j, 1] + nodes[k, 1])
-    new_nodes[edges[..., 0], 0] = xcoord0
-    new_nodes[edges[..., 0], 1] = ycoord0
-
-    xcoord1 = 0.5 * (nodes[i, 0] + nodes[k, 0])
-    ycoord1 = 0.5 * (nodes[i, 1] + nodes[k, 1])
-    new_nodes[edges[..., 1], 0] = xcoord1
-    new_nodes[edges[..., 1], 1] = ycoord1
-
-    xcoord2 = 0.5 * (nodes[i, 0] + nodes[j, 0])
-    ycoord2 = 0.5 * (nodes[i, 1] + nodes[j, 1])
-    new_nodes[edges[..., 2], 0] = xcoord2
-    new_nodes[edges[..., 2], 1] = ycoord2
-
-    return (new_nodes.astype(np.float32),
-            np.column_stack((elements, edges)),
-            new_bnd_node_edges)
+    return new_nodes, new_elements, new_boundary_elements
 
 
 def convert_linear_to_quadratic(mesh):
-    node_dtype = mesh.dtype
 
     nodes, elements, boundary_elements = tf.numpy_function(
-        _linear_trimesh_to_quadratic,
-        [mesh.nodes, mesh.elements, mesh.boundary_node_indices],
-        Tout=[node_dtype, tf.int32, tf.int32])
+        _convert_linear_to_quadratic,
+        [mesh.nodes, mesh.elements, mesh.boundary_elements],
+        Tout=[mesh.dtype, tf.int32, tf.int32])
 
-    return nodes, elements, boundary_elements
+    return tenfem.mesh.TriangleMesh(nodes,
+                                    elements,
+                                    boundary_elements,
+                                    dtype=mesh.dtype)
