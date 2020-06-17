@@ -15,6 +15,7 @@
 """ Layer to do interpolation on a triangular mesh. """
 import tensorflow as tf
 import tenfem
+from tenfem.layers import BaseFEMLayer
 
 
 def barycentric(p, a, b, c):
@@ -39,7 +40,7 @@ def barycentric(p, a, b, c):
     return r, s, t
 
 
-class TriangleMeshInterpolator(tf.keras.layers.Layer):
+class TriangleMeshInterpolator(BaseFEMLayer):
     """ Layer to do interpolation on a triangular mesh.
 
     ToDo(dan):
@@ -81,8 +82,8 @@ class TriangleMeshInterpolator(tf.keras.layers.Layer):
                               element_nodes[..., 1, :],
                               element_nodes[..., 2, :])
 
-        shape_function = self.element.get_shape_function()
-        shape_fn, _ = shape_function(r, s)
+
+        shape_fn, _ = self.reference_element.shape_function(r, s)
 
         element_nodal_vals = tf.gather(nodal_vals, tri_indices)
 
