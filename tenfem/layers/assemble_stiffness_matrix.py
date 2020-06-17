@@ -23,9 +23,10 @@ class AssembleStiffnessMatrix(BaseFEMLayer):
     """ tf.keras Layer for assembling the stiffness matrix. """
     def __init__(self,
                  diffusion_coefficient: Callable,
-                 name: str = 'assemble_stiffness_matrix'):
+                 name: str = 'assemble_stiffness_matrix',
+                 *args, **kwargs):
         """ Create an AssembleStiffnessMatrix layer. """
-        super(AssembleStiffnessMatrix, self).__init__(name=name)
+        super(AssembleStiffnessMatrix, self).__init__(name=name, *args, **kwargs)
         self._diffusion_coefficient = diffusion_coefficient
 
     @property
@@ -34,7 +35,8 @@ class AssembleStiffnessMatrix(BaseFEMLayer):
         return self._diffusion_coefficient
 
     def call(self, mesh_tensor_repr):
-        mesh = tenfem.mesh.utils.mesh_from_tensor_repr(mesh_tensor_repr)
+        mesh = tenfem.mesh.utils.mesh_from_tensor_repr(mesh_tensor_repr,
+                                                       self.reference_element)
         element = self.reference_element
 
         # shape [mesh.n_elements, element_dim, spatial_dim]

@@ -15,4 +15,3 @@
 """ Layers to implement the FEM method. """
 from .base_fem_layer import BaseFEMLayer
 from .assemble_stiffness_matrix import AssembleStiffnessMatrix
-
