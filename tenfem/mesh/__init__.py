@@ -15,3 +15,4 @@
 from .base_mesh import BaseMesh
 from .triangle_mesh import TriangleMesh
 from . import examples
+from . import utils

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import tensorflow as tf
 import tenfem
 from tenfem.reference_elements import TriangleElement
 

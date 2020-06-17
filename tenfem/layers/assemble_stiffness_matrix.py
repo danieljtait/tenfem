@@ -14,6 +14,7 @@
 # ============================================================================
 """ Layer to assemble the stiffness matrix. """
 from typing import Callable
+import tensorflow as tf
 import tenfem
 from tenfem.layers import BaseFEMLayer
 
@@ -33,5 +34,30 @@ class AssembleStiffnessMatrix(BaseFEMLayer):
         return self._diffusion_coefficient
 
     def call(self, mesh_tensor_repr):
-        mesh = tenfem.mesh.mesh_from_tensor_repr(mesh_tensor_repr)
+        mesh = tenfem.mesh.utils.mesh_from_tensor_repr(mesh_tensor_repr)
+        element = self.reference_element
 
+        # shape [mesh.n_elements, element_dim, spatial_dim]
+        mesh_quadrature_nodes = element.get_quadrature_nodes(mesh)
+
+        element_dim = tf.shape(mesh_quadrature_nodes)[-2]
+        spatial_dim = tf.shape(mesh.nodes)[-1]
+
+        # evaluate the diffusion coefficient at the quadrature nodes
+        flat_mesh_quadrature_nodes = tf.reshape(mesh_quadrature_nodes, [-1, spatial_dim])
+        diffusion_coeff_vals = tf.reshape(
+            self.diffusion_coefficient(flat_mesh_quadrature_nodes),
+            [-1, mesh.n_elements, element_dim])
+
+        local_stiffness_mat = tenfem.fem.assemble_local_stiffness_matrix(
+            diffusion_coeff_vals, mesh, element)
+        local_stiffness_mat = tf.reshape(local_stiffness_mat,
+                                         [-1, mesh.n_elements, element_dim, element_dim])
+
+        batch_size = tf.shape(local_stiffness_mat)[0]
+        elements = tf.tile(mesh.elements[tf.newaxis, ...], [batch_size, 1, 1])
+
+        global_stiffness_mat = tenfem.fem.scatter_matrix_to_global(
+            local_stiffness_mat, elements, mesh.n_nodes)
+
+        return global_stiffness_mat
