@@ -20,11 +20,12 @@ import tensorflow as tf
 
 import numpy as np
 
+element = tenfem.reference_elements.TriangleElement(degree=1)
+
 
 class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
 
     def test_assemble_local_stiffness_matrix(self):
-        element = tenfem.reference_elements.TriangleElement(degree=1)
         mesh = tenfem.mesh.examples.square(2, 2)
         element_dim = tf.shape(mesh.elements)[-1]
 
@@ -44,7 +45,6 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
             local_stiffness_mat, elements, mesh.n_nodes)
 
     def test_assemble_local_load_vector(self):
-        element = tenfem.reference_elements.TriangleElement(degree=1)
         mesh = tenfem.mesh.examples.square(2, 2)
         element_dim = tf.shape(mesh.elements)[-1]
 
