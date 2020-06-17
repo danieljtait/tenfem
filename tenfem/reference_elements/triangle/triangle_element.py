@@ -36,13 +36,16 @@ class TriangleElement(tf.Module):
         self._degree = degree
         self._dtype = dtype
 
+        # Todo: Investigate why the `get_quadrature_nodes` function
+        #  breaks when quadrature order is a tensor -- something to
+        #  do with the conditionals.
         if self.degree == 1:
             self._shape_fn = p1_shape_fn
-            self._quadrature_order = tf.constant(2, dtype=tf.int32)
+            self._quadrature_order = 2
             self._element_dim = tf.constant(3, dtype=tf.int32)
         elif self.degree == 2:
             self._shape_fn = p2_shape_fn
-            self._quadrature_order = tf.constant(4, dtype=tf.int32)
+            self._quadrature_order = 4
             self._element_dim = tf.constant(6, dtype=tf.int32)
         else:
             raise NotImplementedError(''.join(
