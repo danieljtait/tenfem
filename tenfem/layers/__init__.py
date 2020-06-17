@@ -17,3 +17,4 @@ from .base_fem_layer import BaseFEMLayer
 from .assemble_stiffness_matrix import AssembleStiffnessMatrix
 from .assemble_load_vector import AssembleLoadVector
 from .mesh_provider import MeshProvider
+from .solve_dirichlet_layer import SolveDirichletProblem
