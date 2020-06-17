@@ -25,7 +25,7 @@ class MeshProvider(tf.keras.layers.Layer):
                  return_precond_matrix=False,
                  name='mesh_provider'):
         """ Create a MeshProvider instance. """
-        super(MeshProvider, self).__init__(reference_element=reference_element,
+        super(MeshProvider, self).__init__(reference_element,
                                            name=name)
 
         element_dim = tf.shape(mesh.elements)[-1]

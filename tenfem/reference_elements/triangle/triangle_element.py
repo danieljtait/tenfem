@@ -38,9 +38,11 @@ class TriangleElement(object):
         if self.degree == 1:
             self._shape_fn = p1_shape_fn
             self._quadrature_order = tf.constant(2, dtype=tf.int32)
+            self._element_dim = tf.constant(3, dtype=tf.int32)
         elif self.degree == 2:
             self._shape_fn = p2_shape_fn
             self._quadrature_order = tf.constant(4, dtype=tf.int32)
+            self._element_dim = tf.constant(6, dtype=tf.int32)
         else:
             raise NotImplementedError(''.join(
                 ('Only degree p in [1, 2] polynomials currently supported',
@@ -49,6 +51,11 @@ class TriangleElement(object):
     @property
     def degree(self):
         return self._degree
+
+    @property
+    def element_dim(self):
+        """ Number of nodes needed to define an element of given degree. """
+        return self._element_dim
 
     @property
     def quadrature_order(self):
