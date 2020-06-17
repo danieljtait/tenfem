@@ -20,6 +20,8 @@ from tenfem.reference_elements import TriangleElement
 def mesh_from_tensor_repr(mesh_tensor_repr, mesh_element):
     """ Utility function to build a mesh from its tensor representation.
 
+    ToDo: Add functionality to handle masked nodes in `node_types`
+
     Args:
         mesh_tensor_repr: A length four tuple of `Tensor`s giving a
           representation of the mesh in Tensor form. This tensor is of the
@@ -32,21 +34,14 @@ def mesh_from_tensor_repr(mesh_tensor_repr, mesh_element):
         mesh: A `tenfem.mesh` mesh object of element type determined
           by `mesh_element`.
     """
-    nodes, elements, node_types = mesh_tensor_repr
-
-    is_int_node = node_types == 0
-    n_nodes = tf.shape(nodes)[-2]
-
-    interior_node_indices = tf.gather(tf.range(n_nodes), tf.where(is_int_node)[:, 0])
-    boundary_node_indices = tf.gather(tf.range(n_nodes), tf.where(tf.math.logical_not(is_int_node))[:, 0])
-
-    boundary_elements =
+    nodes, elements, boundary_elements, node_types = mesh_tensor_repr
 
     if isinstance(mesh_element, TriangleElement):
-        return tenfem.mesh.TriangleMesh(
-            nodes,
-            elements,
-            dtype=nodes.dtype)
-
+        mesh_clz = tenfem.mesh.TriangleMesh
     else:
-        raise NotImplementedError
+        mesh_clz = tenfem.mesh.BaseMesh
+
+    return mesh_clz(nodes,
+                    elements,
+                    boundary_elements,
+                    dtype=nodes.dtype)
