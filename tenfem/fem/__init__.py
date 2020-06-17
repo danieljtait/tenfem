@@ -18,4 +18,5 @@ from .assemble_local_load_vector import assemble_local_load_vector
 from . import indexing_utils
 from .scatter_to_global import (scatter_matrix_to_global,
                                 scatter_vector_to_global)
-
+from .solve_dirichlet import (dirichlet_form_linear_system,
+                              solve_dirichlet_form_linear_system)
