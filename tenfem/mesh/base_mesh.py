@@ -17,6 +17,7 @@ import abc
 import six
 import tensorflow as tf
 import numpy as np
+from typing import Tuple
 
 __all__ = ['BaseMesh', ]
 
@@ -121,6 +122,17 @@ class BaseMesh(tf.Module):
     def cast_nodes(self, dtype):
         """ Cast the node tensors to a new dtype. """
         self._nodes = tf.cast(self._nodes, dtype)
+
+    def get_tensor_repr(self) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor, tf.Tensor]:
+        nodes = self.nodes
+        elements = self.elements
+        boundary_elements = self.boundary_elements
+        bnd_node_indices = self.boundary_node_indices
+        node_types = tf.scatter_nd(self.boundary_node_indices[..., tf.newaxis],
+                                   tf.ones_like(bnd_node_indices),
+                                   shape=[self.n_nodes, ])
+
+        return nodes, elements, boundary_elements, node_types
 
     def _get_boundary_node_indices_from_boundary_faces(self):
         """ Gets the indices of boundary nodes from the boundary faces.

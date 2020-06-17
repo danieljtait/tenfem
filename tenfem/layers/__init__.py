@@ -13,4 +13,5 @@
 # limitations under the License.
 # ============================================================================
 """ Layers to implement the FEM method. """
-from .base_layer import BaseFEMLayer
+from .base_fem_layer import BaseFEMLayer
+

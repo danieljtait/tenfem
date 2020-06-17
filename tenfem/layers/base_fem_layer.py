@@ -26,16 +26,13 @@ __all__ = ['BaseFEMLayer', ]
 class BaseFEMLayer(tf.keras.layers.Layer):
     """ Base layer for FEM operations. """
     def __init__(self,
-                 mesh: tenfem.mesh.BaseMesh):
+                 name: str = 'base_fem_layer'):
         """ Create a BaseFEMLayer instance
 
         Args:
             mesh: A finite element mesh.
+            name: A python string giving the name of the layer op.
+              Default `base_fem_layer`.
 
         """
-        self._mesh = mesh
-
-    @property
-    def mesh(self):
-        """ mesh for the FEM problem. """
-        return self._mesh
+        super(BaseFEMLayer, self).__init__(name=name)
