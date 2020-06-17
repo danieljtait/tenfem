@@ -59,7 +59,7 @@ class AssembleLoadVector(BaseFEMLayer):
         batch_size = tf.shape(local_load_vector)[0]
         elements = tf.tile(mesh.elements[tf.newaxis, ...], [batch_size, 1, 1])
 
-        load_vector = tenfem.fem.scatter_matrix_to_global(
+        load_vector = tenfem.fem.scatter_vector_to_global(
             local_load_vector, elements, mesh.n_nodes)
 
         return load_vector
