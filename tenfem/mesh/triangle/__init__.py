@@ -12,8 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from .base_mesh import BaseMesh
-from .triangle_mesh import TriangleMesh
-from . import examples
-from . import utils
-from . import triangle
+""" Additional utility functions specific to a triangle mesh. """
+from .convert_linear_to_quadratic import convert_linear_to_quadratic
