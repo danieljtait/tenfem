@@ -47,7 +47,6 @@ def dirichlet_form_linear_system(lhs_matrix: tf.Tensor,
     bnd_nodes = tf.where(node_types == 1)[:, 0]
 
     matrix_int = tf.gather(tf.gather(lhs_matrix, int_nodes, axis=-1), int_nodes, axis=-2)
-    matrix_int = tf.linalg.LinearOperatorFullMatrix(matrix_int)
 
     vec_int = tf.gather(rhs_vector, int_nodes, axis=-2)
     if boundary_vals is not None:
@@ -89,6 +88,15 @@ def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
     if method == 'lu':
         lu, p = tf.linalg.lu(stiffness_interior)
         uo = tf.linalg.lu_solve(lu, p, load_interior)
-        return uo
     else:
         raise NotImplementedError('Unrecognised method {}'.format(method))
+
+    n_nodes = tf.shape(bilinear_form)[-1]
+
+    indices = tf.where(node_types == 0)
+    bnd_indices = tf.where(node_types == 1)
+
+    u = tf.scatter_nd(indices, uo[:, 0], shape=[n_nodes])
+    if boundary_vals is not None:
+        u = tf.tensor_scatter_nd_update(u, bnd_indices, boundary_vals[:, 0])
+    return u[..., tf.newaxis]

@@ -65,6 +65,34 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         self.assertEqual(tf.shape(global_load_vector).numpy().tolist(),
                          [batch_size.numpy(), mesh.n_nodes, 1])
 
+    def test_solve_dirichlet(self):
+        mesh = tenfem.mesh.examples.square(4, 4)
+        element_dim = tf.shape(mesh.elements)[-1]
+        diff_coeff = tf.ones([mesh.n_elements, element_dim])
+        source = tf.ones([mesh.n_elements, element_dim])
+        local_stiffness_mat = tenfem.fem.assemble_local_stiffness_matrix(
+            diff_coeff, mesh, element)
+        local_load_vec = tenfem.fem.assemble_local_load_vector(
+            source, mesh, element)
+        stiffness_mat = tenfem.fem.scatter_matrix_to_global(
+            local_stiffness_mat[tf.newaxis, ...], mesh.elements[tf.newaxis, ...], mesh.n_nodes)
+        load_vec = tenfem.fem.scatter_vector_to_global(
+            local_load_vec[tf.newaxis, ...], mesh.elements[tf.newaxis, ...], mesh.n_nodes)
+
+        node_types = tf.scatter_nd(mesh.boundary_node_indices[:, tf.newaxis],
+                                   tf.ones_like(mesh.boundary_node_indices),
+                                   shape=[mesh.n_nodes])
+
+        bnd_vals = tf.cast(
+            np.ones_like(mesh.boundary_node_indices), tf.float32)[:, tf.newaxis]
+
+        u = tenfem.fem.solve_dirichlet_form_linear_system(
+            stiffness_mat[0], load_vec[0], node_types, bnd_vals)
+
+        u_bnd = tf.gather(u, mesh.boundary_node_indices)
+
+        np.testing.assert_allclose(u_bnd, bnd_vals)
+
 
 if __name__ == '__main__':
     absltest.main()
