@@ -142,7 +142,8 @@ class BaseMesh(tf.Module):
               formed by taking the unique elements from `self.boundary_elements`
         """
         bnd_nodes = tf.numpy_function(
-            np.unique, [self.boundary_elements, ], Tout=tf.int32)
+            lambda x: np.unique(x).astype(np.int32),
+            [self.boundary_elements, ], Tout=tf.int32)
         return bnd_nodes
 
     def _get_interior_node_indices(self):
