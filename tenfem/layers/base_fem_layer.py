@@ -12,5 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-""" Layers to implement the FEM method. """
-from .base_layer import BaseFEMLayer
+""" Base layer for FEM related operations. """
+import abc
+import six
+import tensorflow as tf
+import tenfem
+
+
+__all__ = ['BaseFEMLayer', ]
+
+
+@six.add_metaclass(abc.ABCMeta)
+class BaseFEMLayer(tf.keras.layers.Layer):
+    """ Base layer for FEM operations. """
+    def __init__(self,
+                 mesh: tenfem.mesh.BaseMesh):
+        """ Create a BaseFEMLayer instance
+
+        Args:
+            mesh: A finite element mesh.
+
+        """
+        self._mesh = mesh
+
+    @property
+    def mesh(self):
+        """ mesh for the FEM problem. """
+        return self._mesh
