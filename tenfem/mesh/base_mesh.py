@@ -154,7 +154,7 @@ class BaseMesh(tf.Module):
               representing indices of `self.nodes` which are in the interior.
         """
         def diff_nodes(n_nodes, bnd_node_indices):
-            return np.setdiff1d(np.arange(n_nodes), bnd_node_indices)
+            return np.setdiff1d(np.arange(n_nodes), bnd_node_indices).astype(np.int32)
 
         return tf.numpy_function(diff_nodes,
                                  [self.n_nodes, self.boundary_node_indices],
