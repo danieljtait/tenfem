@@ -16,7 +16,8 @@
 from typing import Callable, Union
 import tensorflow as tf
 import tenfem
-from tenfem.layers import BaseFEMLayer
+from tenfem.layers import BaseFEMLayer, SolveDirichletProblem
+
 
 
 class LinearEllipticOperator(BaseFEMLayer):
@@ -38,6 +39,9 @@ class LinearEllipticOperator(BaseFEMLayer):
         if self._boundary_condition == 'dirichlet':
             try:
                 self._boundary_values = kwargs['boundary_values']
+                self._solve_layer = SolveDirichletProblem(
+                    boundary_condition,
+                    reference_element=self.reference_element)
             except KeyError:
                 raise ValueError(''.join((
                     'If this model uses Dirichlet boundary conditions then ',
@@ -46,6 +50,11 @@ class LinearEllipticOperator(BaseFEMLayer):
         else:
             raise NotImplementedError('Only Dirichlet boundary conditions currently implemented')
 
+
+    @property
+    def solve_layer(self):
+        """ Layer used to solve the problem. """
+        return self._solve_layer
 
     def call(self, mesh_tensor_repr):
         mesh = tenfem.mesh.utils.mesh_from_tensor_repr(mesh_tensor_repr,
@@ -90,4 +99,4 @@ class LinearEllipticOperator(BaseFEMLayer):
         load_vector = tenfem.fem.scatter_vector_to_global(
             local_load_vector, elements, mesh.n_nodes)
 
-        u =
+        return self.solve_layer((global_stiffness_mat, load_vector, mesh_tensor_repr))
