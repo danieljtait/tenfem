@@ -48,7 +48,7 @@ class LinearEllipticOperator(BaseFEMLayer):
             boundary_condition: A python string giving the type of boundary
               condition, should be one of `dirichlet`, `neumann` or `mixed.
 
-        Raise:
+        Raises:
             NotImplementedError: `If boundary_condition != 'dirichlet'`
               currently only Dirichlet boundary conditions are implemented.
             ValueError: `If boundary_condition == 'dirichlet'` but no function
