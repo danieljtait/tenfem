@@ -19,7 +19,6 @@ import tenfem
 from tenfem.layers import BaseFEMLayer, SolveDirichletProblem
 
 
-
 class LinearEllipticOperator(BaseFEMLayer):
     """ tf.keras Layer for solving linear elliptic second order PDES. """
     def __init__(self,
@@ -29,6 +28,32 @@ class LinearEllipticOperator(BaseFEMLayer):
                  name: str ='linear_elliptic_opeartor',
                  boundary_condition: str = 'dirichlet',
                  *args, **kwargs):
+        """ Creates a LinearEllipticOperator instance.
+
+        Args:
+            diffusion_coefficient: A callable giving the diffusion
+              of the elliptic operator. Will be queried at the mesh
+              quadrature nodes, and reshaped to
+              `[-1, n_elements, element_dim]`.
+            source: A callable giving the source term of the elliptic
+              operator equations. Will be called at the mesh quadrature
+              nodes, and must be able to be reshape to
+              `[-1, n_elements, element_dim]`.
+            transport_vector_field: An optional callable returing the
+              values of the transport vector field at the mesh quadrature
+              nodes and so should return a 2-vector at each point.
+              Default: None, in which case there is no transport term.
+            name: A python string giving the name of this layer, defaults to
+              'linear_elliptic_operator'.
+            boundary_condition: A python string giving the type of boundary
+              condition, should be one of `dirichlet`, `neumann` or `mixed.
+
+        Raise:
+            NotImplementedError: `If boundary_condition != 'dirichlet'`
+              currently only Dirichlet boundary conditions are implemented.
+            ValueError: `If boundary_condition == 'dirichlet'` but no function
+              is supplied to provide the values on the boundary.
+        """
         super(LinearEllipticOperator, self).__init__(name=name, *args, **kwargs)
 
         self._diffusion_coefficient = diffusion_coefficient
