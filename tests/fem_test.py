@@ -20,6 +20,9 @@ import tensorflow as tf
 
 import numpy as np
 
+tfk = tf.keras
+tfkl = tf.keras.layers
+
 element = tenfem.reference_elements.TriangleElement(degree=1)
 
 
@@ -92,6 +95,19 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         u_bnd = tf.gather(u, mesh.boundary_node_indices)
 
         np.testing.assert_allclose(u_bnd, bnd_vals)
+
+    def test_linear_elliptic_opeartor(self):
+        mesh = tenfem.mesh.examples.square(4, 4)
+        diffusion_coefficient = tfkl.Dense(1, activation='softplus')
+        source = tfkl.Dense(1)
+
+        def build_op_to_fail():
+            return tenfem.layers.LinearEllipticOperator(
+                diffusion_coefficient,
+                source,
+                reference_element=element)
+
+        self.assertRaises(ValueError, build_op_to_fail)
 
 
 if __name__ == '__main__':
