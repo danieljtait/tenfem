@@ -35,7 +35,6 @@ class TriangleElementTest(absltest.TestCase):
         self.assertEqual(element.dtype, np.float64)
         self.assertEqual(element.element_dim, 6)
 
-
     def test_quadrature_nodes(self):
         element = tenfem.reference_elements.TriangleElement(degree=1)
         mesh = tenfem.mesh.examples.square(2, 2)
