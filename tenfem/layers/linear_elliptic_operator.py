@@ -64,12 +64,12 @@ class LinearEllipticOperator(BaseFEMLayer):
         self._boundary_condition = boundary_condition
 
         if self._boundary_condition == 'dirichlet':
-            try:
+            if boundary_values is not None:
                 self._boundary_values = boundary_values
                 self._solve_layer = SolveDirichletProblem(
                     boundary_values,
                     reference_element=self.reference_element)
-            except KeyError:
+            else:
                 raise ValueError(''.join((
                     'If this model uses Dirichlet boundary conditions then ',
                     'the values of the solution on the boundary must be supplied',
