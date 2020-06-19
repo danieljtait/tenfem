@@ -17,6 +17,7 @@ import tensorflow as tf
 import tenfem
 from tenfem.reference_elements import BaseReferenceElement
 from .linear_element_shape_functions import p1_shape_fn
+from .gaussian_quadrature import gauss_quad_nodes_and_weights
 
 
 __all__ = ['IntervalElement', ]
