@@ -29,9 +29,12 @@ class TriangleElementTest(absltest.TestCase):
 
         element = tri_elem_clz(degree=1)
         self.assertEqual(element.dtype, np.float32)
+        self.assertEqual(element.element_dim, 3)
 
         element = tri_elem_clz(degree=2, dtype=tf.float64)
         self.assertEqual(element.dtype, np.float64)
+        self.assertEqual(element.element_dim, 6)
+
 
     def test_quadrature_nodes(self):
         element = tenfem.reference_elements.TriangleElement(degree=1)
