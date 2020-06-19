@@ -13,14 +13,15 @@
 # limitations under the License.
 # ============================================================================
 """ Shape functions for linear elements. """
+from typing import Tuple
 import tensorflow as tf
 
 
-def p1_shape_fn(r):
+def p1_shape_fn(r: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
     """ Shape function of the linear Lagrange polynomial on an interval element.
 
     Args:
-        r: A flat `Tensor` of shape `[..., n]` the canonical coordinate on the
+        r: A float `Tensor` of shape `[..., n]` the canonical coordinate on the
           reference interval element `I = [0, 1]`.
 
     Returns:
