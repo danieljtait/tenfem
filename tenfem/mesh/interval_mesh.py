@@ -12,9 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from .base_mesh import BaseMesh
-from .interval_mesh import IntervalMesh
-from .triangle_mesh import TriangleMesh
-from . import examples
-from . import utils
-from . import triangle
+from tenfem.mesh import BaseMesh
+import tensorflow as tf
+
+__all__ = ['IntervalMesh', ]
+
+
+class IntervalMesh(BaseMesh):
+    """ Interval mesh """
+
+    @property
+    def spatial_dimension(self):
+        """ Spatial dimension of interval mesh embedding.
+        ToDo: Want to embed interval mesh in more general spaces.
+        """
+        return tf.constant(1, dtype=tf.int32)
