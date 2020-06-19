@@ -75,7 +75,6 @@ class LinearEllipticOperator(BaseFEMLayer):
         else:
             raise NotImplementedError('Only Dirichlet boundary conditions currently implemented')
 
-
     @property
     def solve_layer(self):
         """ Layer used to solve the problem. """
