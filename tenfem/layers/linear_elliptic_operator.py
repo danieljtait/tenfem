@@ -27,7 +27,8 @@ class LinearEllipticOperator(BaseFEMLayer):
                  transport_vector_field: Union[Callable, None] = None,
                  name: str ='linear_elliptic_opeartor',
                  boundary_condition: str = 'dirichlet',
-                 *args, **kwargs):
+                 reference_element=None,
+                 boundary_values=None):
         """ Creates a LinearEllipticOperator instance.
 
         Args:
@@ -54,7 +55,8 @@ class LinearEllipticOperator(BaseFEMLayer):
             ValueError: `If boundary_condition == 'dirichlet'` but no function
               is supplied to provide the values on the boundary.
         """
-        super(LinearEllipticOperator, self).__init__(name=name, *args, **kwargs)
+        super(LinearEllipticOperator, self).__init__(name=name,
+                                                     reference_element=reference_element)
 
         self._diffusion_coefficient = diffusion_coefficient
         self._source = source
@@ -63,9 +65,9 @@ class LinearEllipticOperator(BaseFEMLayer):
 
         if self._boundary_condition == 'dirichlet':
             try:
-                self._boundary_values = kwargs['boundary_values']
+                self._boundary_values = boundary_values
                 self._solve_layer = SolveDirichletProblem(
-                    boundary_condition,
+                    boundary_values,
                     reference_element=self.reference_element)
             except KeyError:
                 raise ValueError(''.join((
@@ -79,6 +81,16 @@ class LinearEllipticOperator(BaseFEMLayer):
     def solve_layer(self):
         """ Layer used to solve the problem. """
         return self._solve_layer
+
+    @property
+    def diffusion_coefficient(self):
+        """ Diffusion coefficient of the elliptic operator. """
+        return self._diffusion_coefficient
+
+    @property
+    def source(self):
+        """ Source term of the elliptic operator. """
+        return self._source
 
     def call(self, mesh_tensor_repr):
         mesh = tenfem.mesh.utils.mesh_from_tensor_repr(mesh_tensor_repr,
