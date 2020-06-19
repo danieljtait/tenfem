@@ -43,3 +43,8 @@ class BaseReferenceElement(tf.Module):
     def embedding_dim(self):
         """ Dimension of the space in which this element is embedded. """
         return self._embedding_dim
+
+    @property
+    def dtype(self):
+        """ Data-type of the element. """
+        return self._dtype
