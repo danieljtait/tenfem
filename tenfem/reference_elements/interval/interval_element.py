@@ -22,12 +22,17 @@ __all__ = ['IntervalElement', ]
 
 class IntervalElement(BaseReferenceElement):
     """ Reference element for an interval mesh. """
-    def __init__(self, degree: int, dtype: tf.DType = tf.float32):
+    def __init__(self,
+                 degree: int,
+                 quadrature_order: int = 2,
+                 dtype: tf.DType = tf.float32):
         """ Creates in IntervalElement instance.
 
         Args:
             degree: A python integer giving the degree of the polynomials on this
               function space.
+            quadrature_order: A python integer giving the order of the Gaussian
+              quadrature of integrals over this element.
             dtype: (optional) A `tf.DType` giving the data-type of the mesh nodes.
               Default, None then dtype defaults to `tf.float32`.
 
@@ -38,3 +43,24 @@ class IntervalElement(BaseReferenceElement):
         super(IntervalElement, self).__init__(name='interval_element')
         self._degree = degree
         self._dtype = dtype
+
+    def get_quadrature_nodes(self, mesh):
+        """ Get the gaussian quadrature nodes of the mesh.
+
+        Args:
+            mesh: A `tenfem.mesh.BaseMesh` object giving the mesh we want
+              to find the quadrature nodes on.
+
+        Returns:
+            quadrature_nodes: A float `tf.Tensor` of shape
+             `[mesh.n_elements, n_quadrature_nodes, mesh.spatial_dimension]`
+             giving the coordinates of the quadrature nodes on the mesh.
+        """
+        shape_fn = self.shape_function
+        _, quad_nodes = gauss_quad_nodes_and_weights(self.quadrature_order, dtype=self.dtype)
+
+        element_nodes = tf.gather(mesh.nodes, mesh.elements)
+        shape_fn_vals, _ = shape_fn(quad_nodes)
+
+        return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
+                             * shape_fn_vals[..., tf.newaxis], axis=-2)
