@@ -33,3 +33,13 @@ class BaseReferenceElement(tf.Module):
 
         """
         super(BaseReferenceElement, self).__init__(name=name)
+
+    @property
+    def element_dim(self):
+        """ Number of nodes needed to define an element. """
+        return self._element_dim
+
+    @property
+    def embedding_dim(self):
+        """ Dimension of the space in which this element is embedded. """
+        return self._embedding_dim
