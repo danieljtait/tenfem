@@ -29,7 +29,7 @@ def p1_shape_fn(r: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
           `[..., n, i]` the evaluation of the ith shape function at coordinate
           `r[..., n]`.
         shape_fn_grads: A float `Tensor` giving the gradient with respect to
-          the canincal coordinate of the shape function. A float tensor of
+          the canonical coordinate of the shape function. A float tensor of
           shape `[1, ..., n, 2]`.
     """
     shape_fn_vals = tf.concat((1 - r[..., tf.newaxis], r[..., tf.newaxis]), axis=-1)
