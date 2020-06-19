@@ -58,11 +58,6 @@ class TriangleElement(BaseReferenceElement):
         return self._degree
 
     @property
-    def element_dim(self):
-        """ Number of nodes needed to define an element of given degree. """
-        return self._element_dim
-
-    @property
     def quadrature_order(self):
         """ The number of nodes for Gaussian quadrature. """
         return self._quadrature_order
