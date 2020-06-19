@@ -13,11 +13,12 @@
 # limitations under the License.
 # ============================================================================
 import tensorflow as tf
+from tenfem.reference_elements import BaseReferenceElement
 from .shape_functions import p1_shape_fn, p2_shape_fn
 from .gaussian_quadrature import gauss_quad_nodes_and_weights
 
 
-class TriangleElement(tf.Module):
+class TriangleElement(BaseReferenceElement):
     """ Reference element for a triangle mesh. """
     def __init__(self, degree: int, dtype: tf.DType = tf.float32):
         """
