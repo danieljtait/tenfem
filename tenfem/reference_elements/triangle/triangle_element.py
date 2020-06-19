@@ -67,11 +67,6 @@ class TriangleElement(BaseReferenceElement):
         """ Data-type of the element. """
         return self._dtype
 
-    @property
-    def shape_function(self):
-        """ Shape functions on the element. """
-        return self._shape_fn
-
     def get_quadrature_nodes(self, mesh):
         """ Get the gaussian quadrature nodes of the mesh.
 

@@ -14,7 +14,9 @@
 # ============================================================================
 """ Interval elements.  """
 import tensorflow as tf
+import tenfem
 from tenfem.reference_elements import BaseReferenceElement
+from .linear_element_shape_functions import p1_shape_fn
 
 
 __all__ = ['IntervalElement', ]
@@ -43,8 +45,17 @@ class IntervalElement(BaseReferenceElement):
         super(IntervalElement, self).__init__(name='interval_element')
         self._degree = degree
         self._dtype = dtype
+        self._quadrature_order = quadrature_order
 
-    def get_quadrature_nodes(self, mesh):
+        if degree == 1:
+            self._shape_fn = p1_shape_fn
+        else:
+            raise NotImplementedError('-'.join((
+                'Currently only linear shape functions',
+                'supported on IntervalElements')))
+
+    def get_quadrature_nodes(self,
+                             mesh: tenfem.mesh.BaseMesh) -> tf.Tensor:
         """ Get the gaussian quadrature nodes of the mesh.
 
         Args:

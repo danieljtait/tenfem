@@ -48,3 +48,13 @@ class BaseReferenceElement(tf.Module):
     def dtype(self):
         """ Data-type of the element. """
         return self._dtype
+
+    @property
+    def shape_function(self):
+        """ Shape functions on the element. """
+        return self._shape_fn
+
+    @property
+    def quadrature_order(self):
+        """ The order of Gaussian quadrature performed on the reference element. """
+        return self._quadrature_order
