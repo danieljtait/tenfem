@@ -12,5 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from .base_element import BaseReferenceElement
-from .triangle import TriangleElement
+""" Base class for reference elements. """
+import abc
+import six
+import tensorflow as tf
+
+__all__ = ['BaseReferenceElement', ]
+
+
+@six.add_metaclass(abc.ABCMeta)
+class BaseReferenceElement(tf.Module):
+    """ Base class for reference elements. """
+    def __init__(self,
+                 name: str = 'base_reference_element'):
+        """ Create a BaseReferenceElement instance
+
+        Args:
+            name: A python string giving the name of the base element,
+              Default: `base_reference_element`.
+
+        """
+        super(BaseReferenceElement, self).__init__(name=name)
