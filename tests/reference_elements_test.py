@@ -24,7 +24,8 @@ import numpy as np
 class IntervalElementTest(absltest.TestCase):
 
     def test_interval_element_init(self):
-        interal_elem_clz = tenfem.reference_elements.IntervalElement
+        interval_elem_clz = tenfem.reference_elements.IntervalElement
+        self.assertRaises(NotImplementedError, lambda: interval_elem_clz(degree=2))
 
 
 class TriangleElementTest(absltest.TestCase):

@@ -14,7 +14,7 @@
 # ============================================================================
 """ Interval elements.  """
 import tensorflow as tf
-import tenfem
+from tenfem.mesh import BaseMesh
 from tenfem.reference_elements import BaseReferenceElement
 from .linear_element_shape_functions import p1_shape_fn
 from .gaussian_quadrature import gauss_quad_nodes_and_weights
@@ -56,7 +56,7 @@ class IntervalElement(BaseReferenceElement):
                 'supported on IntervalElements')))
 
     def get_quadrature_nodes(self,
-                             mesh: tenfem.mesh.BaseMesh) -> tf.Tensor:
+                             mesh: BaseMesh) -> tf.Tensor:
         """ Get the gaussian quadrature nodes of the mesh.
 
         Args:
