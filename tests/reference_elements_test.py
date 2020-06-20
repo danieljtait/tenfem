@@ -21,6 +21,12 @@ import tensorflow as tf
 import numpy as np
 
 
+class IntervalElementTest(absltest.TestCase):
+
+    def test_interval_element_init(self):
+        interal_elem_clz = tenfem.reference_elements.IntervalElement
+
+
 class TriangleElementTest(absltest.TestCase):
 
     def test_triangle_element_init(self):

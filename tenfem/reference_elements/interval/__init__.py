@@ -12,4 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from .interval_element import BaseReferenceElement
+from .interval_element import IntervalElement
+

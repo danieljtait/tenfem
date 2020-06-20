@@ -13,4 +13,5 @@
 # limitations under the License.
 # ============================================================================
 from .base_element import BaseReferenceElement
+from .interval import IntervalElement
 from .triangle import TriangleElement
