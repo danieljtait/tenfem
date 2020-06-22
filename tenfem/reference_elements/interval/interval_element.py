@@ -14,7 +14,7 @@
 # ============================================================================
 """ Interval elements.  """
 import tensorflow as tf
-from tenfem.mesh import BaseMesh
+from tenfem.mesh import BaseMesh, IntervalMesh
 from tenfem.reference_elements import BaseReferenceElement
 from .linear_element_shape_functions import p1_shape_fn
 from .gaussian_quadrature import gauss_quad_nodes_and_weights
@@ -79,3 +79,21 @@ class IntervalElement(BaseReferenceElement):
         shape_fn_vals, _ = shape_fn(quad_nodes[:, 0])
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
                              * shape_fn_vals[..., tf.newaxis], axis=-2), weights
+
+    def get_element_volumes(self, mesh):
+        """ Returns the element volumes of an interval mesh.
+
+        Args:
+            mesh: A `tenfem.mesh.BaseMesh` object giving the mesh we want
+              to find the quadrature nodes on.
+
+        Returns:
+            element_volumes: A scalar float `Tensor` of length
+              `mesh.n_elements`.
+        """
+        if isinstance(mesh, IntervalMesh):
+            nodes = tf.gather(mesh.nodes, mesh.elements)
+            volumes = tf.abs(nodes[1:, 0] - nodes[:-1, 0])
+            return volumes
+        else:
+            raise ValueError('An IntervalElement reference element expects an interval mesh.')
