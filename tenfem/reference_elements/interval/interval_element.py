@@ -72,7 +72,6 @@ class IntervalElement(BaseReferenceElement):
         _, quad_nodes = gauss_quad_nodes_and_weights(self.quadrature_order, dtype=self.dtype)
 
         element_nodes = tf.gather(mesh.nodes, mesh.elements)
-        shape_fn_vals, _ = shape_fn(quad_nodes)
-
+        shape_fn_vals, _ = shape_fn(quad_nodes[:, 0])
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
                              * shape_fn_vals[..., tf.newaxis], axis=-2)

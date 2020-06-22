@@ -85,6 +85,7 @@ class TriangleElement(BaseReferenceElement):
 
         element_nodes = tf.gather(mesh.nodes, mesh.elements)
         shape_fn_vals, shape_fn_grads = shape_fn(quad_nodes[..., 0], quad_nodes[..., 1])
+        print(element_nodes.shape, shape_fn_vals.shape)
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
                              * shape_fn_vals[..., tf.newaxis], axis=-2)
 
