@@ -18,5 +18,5 @@ from .assemble_stiffness_matrix import AssembleStiffnessMatrix
 from .assemble_load_vector import AssembleLoadVector
 from .mesh_provider import MeshProvider
 from .solve_dirichlet_layer import SolveDirichletProblem
-from .triangle_mesh_interpolater_layer import TriangleMeshInterpolator
+from .triangle_mesh_interpolator import TriangleMeshInterpolator
 from .linear_elliptic_operator import LinearEllipticOperator

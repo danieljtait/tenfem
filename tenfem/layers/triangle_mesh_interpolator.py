@@ -82,7 +82,6 @@ class TriangleMeshInterpolator(BaseFEMLayer):
                               element_nodes[..., 1, :],
                               element_nodes[..., 2, :])
 
-
         shape_fn, _ = self.reference_element.shape_function(r, s)
 
         element_nodal_vals = tf.gather(nodal_vals, tri_indices)
