@@ -41,8 +41,8 @@ def gauss_quad_nodes_and_weights(order: int,
         nodes = tf.constant([[0.5],], dtype=dtype)
     elif order == 2:
         weights = tf.constant([1., 1.], dtype=dtype)
-        nodes = tf.constant([[0.21132486540518708,]
-                             [0.7886751345948129,]], dtype=dtype)
+        nodes = tf.constant([[0.21132486540518708, ],
+                             [0.7886751345948129, ]], dtype=dtype)
     elif order == 3:
         weights = tf.constant([5./9, 8./9., 5./9], dtype=dtype)
         nodes = tf.constant([[0.1127016653792583, ]
