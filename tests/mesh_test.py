@@ -38,6 +38,17 @@ class BaseMeshTest(absltest.TestCase):
         self.assertEmpty(np.setdiff1d(bnd_node_inds, [0, 1, 2, 3]))
 
 
+class IntervalMeshTest(absltest.TestCase):
+    def test_interval_mesh_example(self):
+        n_nodes = 5
+        nodes = np.linspace(-1.3, 0.5, n_nodes)[:, np.newaxis]
+        elements = np.column_stack((np.arange(0, n_nodes-1),
+                                    np.arange(1, n_nodes)))
+        boundary_elements = [[0, ], [n_nodes-1]]
+        mesh = tenfem.mesh.IntervalMesh(nodes, elements, boundary_elements)
+        self.assertEqual(mesh.n_nodes, n_nodes)
+
+
 class TriangleMeshTest(absltest.TestCase):
 
     def test_square_triangle_mesh_example(self):
