@@ -6,7 +6,7 @@ Tenfem is a Tensorflow + FEM (the Finite Element Method) which
 according to Wikipedia is the "The mostly widely used method for 
 solving problems in engineering"<sup>
  [[citation needed]](https://en.wikipedia.org/wiki/Finite_element_method)
- </sup>. While there already exist excelled open and closed source
+ </sup>. While there already exist excellent open and closed source
  FEM solving software, this library is introduced to allow a more 
  transparent integration of this software as used by engineers with
 more machine learning techniques through the TensorFlow ecosystem.
