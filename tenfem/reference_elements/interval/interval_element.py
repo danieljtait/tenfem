@@ -18,6 +18,7 @@ from tenfem.mesh import BaseMesh
 from tenfem.reference_elements import BaseReferenceElement
 from .linear_element_shape_functions import p1_shape_fn
 from .gaussian_quadrature import gauss_quad_nodes_and_weights
+from typing import Tuple
 
 
 __all__ = ['IntervalElement', ]
@@ -55,9 +56,10 @@ class IntervalElement(BaseReferenceElement):
                 'Currently only linear shape functions',
                 'supported on IntervalElements')))
 
-    def get_quadrature_nodes(self,
-                             mesh: BaseMesh) -> tf.Tensor:
-        """ Get the gaussian quadrature nodes of the mesh.
+    def get_quadrature_nodes_and_weights(self,
+                                         mesh: BaseMesh) -> Tuple[tf.Tensor, tf.Tensor]:
+        """ Get the gaussian quadrature nodes of the mesh,
+        and the weights of the points.
 
         Args:
             mesh: A `tenfem.mesh.BaseMesh` object giving the mesh we want
@@ -69,9 +71,11 @@ class IntervalElement(BaseReferenceElement):
              giving the coordinates of the quadrature nodes on the mesh.
         """
         shape_fn = self.shape_function
-        _, quad_nodes = gauss_quad_nodes_and_weights(self.quadrature_order, dtype=self.dtype)
+        weights, quad_nodes = gauss_quad_nodes_and_weights(
+            self.quadrature_order,
+            dtype=self.dtype)
 
         element_nodes = tf.gather(mesh.nodes, mesh.elements)
         shape_fn_vals, _ = shape_fn(quad_nodes[:, 0])
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
-                             * shape_fn_vals[..., tf.newaxis], axis=-2)
+                             * shape_fn_vals[..., tf.newaxis], axis=-2), weights
