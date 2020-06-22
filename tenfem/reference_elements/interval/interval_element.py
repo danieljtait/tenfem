@@ -93,7 +93,26 @@ class IntervalElement(BaseReferenceElement):
         """
         if isinstance(mesh, IntervalMesh):
             nodes = tf.gather(mesh.nodes, mesh.elements)
-            volumes = tf.abs(nodes[1:, 0] - nodes[:-1, 0])
+            volumes = tf.abs(nodes[..., 1, 0] - nodes[..., 0, 0])
             return volumes
         else:
             raise ValueError('An IntervalElement reference element expects an interval mesh.')
+
+    def quadrature(self, f, mesh):
+        """ Perform quadrature of a function over the mesh.
+
+        Args:
+            f: A scalar callable, when evaluated at a mesh node of shape
+              `[..., spatial_dim]` it should return a `Tensor` of shape
+              `[..., ]` with the same `dtype` as `mesh.
+
+        Returns
+            integral: A quadrature approximation to the integral of
+              f over the mesh.
+        """
+        quad_nodes, quad_weights = self.get_quadrature_nodes_and_weights(mesh)
+        f_at_nodes = f(quad_nodes)
+        volumes = self.get_element_volumes(mesh)
+        return 0.5 * tf.reduce_sum(f_at_nodes
+                                   * quad_weights
+                                   * volumes[..., tf.newaxis], axis=[-1, -2])
