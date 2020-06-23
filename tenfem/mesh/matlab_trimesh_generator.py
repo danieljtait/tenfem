@@ -52,7 +52,10 @@ class MatlabTrimeshGenerator:
             import os
             import matlab.engine
         except ImportError:
-            raise ImportError("You must have a working copy of Matlab and installed the MATLAB Engine, ")
+            msg = ''.join(("You must have a working copy of Matlab and installed the MATLAB Engine.\n",
+                           "Follow the instructions at: \n\n",
+                           "\thttps://mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html"))
+            raise ImportError(msg)
 
         # start the matlab engine
         eng = matlab.engine.start_matlab()
