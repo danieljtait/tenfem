@@ -56,8 +56,8 @@ class IntervalElement(BaseReferenceElement):
                 'Currently only linear shape functions',
                 'supported on IntervalElements')))
 
-    def get_quadrature_nodes_and_weights(self,
-                                         mesh: BaseMesh) -> Tuple[tf.Tensor, tf.Tensor]:
+    def get_mesh_quadrature_nodes(self,
+                                  mesh: BaseMesh) -> Tuple[tf.Tensor, tf.Tensor]:
         """ Get the gaussian quadrature nodes of the mesh,
         and the weights of the points.
 
@@ -71,14 +71,25 @@ class IntervalElement(BaseReferenceElement):
              giving the coordinates of the quadrature nodes on the mesh.
         """
         shape_fn = self.shape_function
-        weights, quad_nodes = gauss_quad_nodes_and_weights(
-            self.quadrature_order,
-            dtype=self.dtype)
+        weights, quad_nodes = self.get_quadrature_nodes_and_weights()
 
         element_nodes = tf.gather(mesh.nodes, mesh.elements)
         shape_fn_vals, _ = shape_fn(quad_nodes[:, 0])
         return tf.reduce_sum(element_nodes[..., tf.newaxis, :, :]
                              * shape_fn_vals[..., tf.newaxis], axis=-2), weights
+
+    def get_quadrature_nodes_and_weights(self):
+        """ The nodes and weights for Gaussian quadrature on an interval element.
+
+        Returns:
+            weights: A float `Tensor` like giving the weights of the
+              gaussian quadrature rule of `self.quadrature_order`, with data-type equal
+              to `dtype`.
+            nodes: A float `Tensor` giving the nodes of the Gaussian
+              quadrature rule of shape [len(weights), 1], with data-type
+              equal to `dtype`.
+        """
+        return gauss_quad_nodes_and_weights(self.quadrature_order, dtype=self.dtype)
 
     def get_element_volumes(self, mesh):
         """ Returns the element volumes of an interval mesh.
