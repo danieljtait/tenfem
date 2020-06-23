@@ -47,6 +47,38 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         global_stiffness_mat = tenfem.fem.scatter_matrix_to_global(
             local_stiffness_mat, elements, mesh.n_nodes)
 
+    def test_interval_stiffness_matrix(self):
+        n_nodes = 5
+        nodes = np.linspace(-0.5, 1.3, n_nodes)[..., np.newaxis]
+        elements = np.column_stack((np.arange(0, n_nodes-1), np.arange(1, n_nodes)))
+        boundary_elements = [[0, ], [n_nodes-1, ]]
+
+        mesh = tenfem.mesh.IntervalMesh(nodes, elements, boundary_elements)
+
+        def assemble_interval_mesh_stiffness():
+            element_nodes = tf.gather(mesh.nodes, mesh.elements).numpy()
+            h = element_nodes[..., 1, 0] - element_nodes[..., 0, 0]  # width of elements
+
+            off_diag = - 1 / h
+            main_diag = np.zeros(mesh.n_nodes)
+            main_diag[:-1] += 1 / h
+            main_diag[1:] += 1 / h
+
+            return np.diag(main_diag) + np.diag(off_diag, k=-1) + np.diag(off_diag, k=1)
+
+        element = tenfem.reference_elements.IntervalElement(degree=1, dtype=mesh.dtype)
+        diff_coeff = tf.ones([mesh.n_elements, 2], dtype=element.dtype)
+
+        local_stiffness_mat = tenfem.fem.assemble_local_stiffness_matrix(diff_coeff, mesh, element)
+
+        global_stiffness_mat = tenfem.fem.scatter_matrix_to_global(
+            local_stiffness_mat[tf.newaxis, ...],
+            mesh.elements[None, ...],
+            mesh.n_nodes)
+
+        np.testing.assert_allclose(assemble_interval_mesh_stiffness(),
+                                   global_stiffness_mat[0])
+
 
 class AssembleLocalLoadVectorTest(absltest.TestCase):
 
