@@ -130,6 +130,10 @@ class IntervalElement(BaseReferenceElement):
 
     def isomap(self, nodes, canonical_coordinates):
         """
+        Args:
+            nodes: A batched tensor of shape [..., element_dim, 1]
+            canonical_coordinates: A tensor of shape [p, 1] where p is the number of shape
+              functions for the given element.
 
         Returns:
             pushfwd_shape_fn_grad: The gradient of shape functions in
@@ -137,10 +141,12 @@ class IntervalElement(BaseReferenceElement):
               `[1, n_elements, n, 2]`
         """
         jacobian_det = nodes[..., 1, 0] - nodes[..., 0, 0]
+        n = tf.shape(canonical_coordinates)[-2]  # number of canonical coords. per element
+        jacobian_det = jacobian_det[..., tf.newaxis] * tf.ones([n], dtype=self.dtype)
 
-        shape_fn_vals, shape_fn_grad = self.shape_function(canonical_coordinates)
+        shape_fn_vals, shape_fn_grad = self.shape_function(canonical_coordinates[..., 0])
 
-        pushfwd_shape_fn_grad = shape_fn_grad / jacobian_det[..., tf.newaxis, tf.newaxis]
+        pushfwd_shape_fn_grad = shape_fn_grad / jacobian_det[..., tf.newaxis]
         pushfwd_shape_fn_grad = pushfwd_shape_fn_grad[tf.newaxis, ...]
 
         return shape_fn_vals, pushfwd_shape_fn_grad, jacobian_det
