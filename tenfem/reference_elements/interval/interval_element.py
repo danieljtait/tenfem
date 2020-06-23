@@ -121,7 +121,7 @@ class IntervalElement(BaseReferenceElement):
             integral: A quadrature approximation to the integral of
               f over the mesh.
         """
-        quad_nodes, quad_weights = self.get_quadrature_nodes_and_weights(mesh)
+        quad_nodes, quad_weights = self.get_mesh_quadrature_nodes(mesh)
         f_at_nodes = f(quad_nodes)
         volumes = self.get_element_volumes(mesh)
         return 0.5 * tf.reduce_sum(f_at_nodes
