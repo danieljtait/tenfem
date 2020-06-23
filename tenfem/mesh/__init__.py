@@ -15,6 +15,7 @@
 from .base_mesh import BaseMesh
 from .interval_mesh import IntervalMesh
 from .triangle_mesh import TriangleMesh
+from .matlab_trimesh_generator import MatlabTrimeshGenerator
 from . import examples
 from . import utils
 from . import triangle
