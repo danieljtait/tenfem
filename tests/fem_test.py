@@ -47,6 +47,9 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
         global_stiffness_mat = tenfem.fem.scatter_matrix_to_global(
             local_stiffness_mat, elements, mesh.n_nodes)
 
+
+class AssembleLocalLoadVectorTest(absltest.TestCase):
+
     def test_assemble_local_load_vector(self):
         mesh = tenfem.mesh.examples.square(2, 2)
         element_dim = tf.shape(mesh.elements)[-1]
@@ -67,6 +70,9 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
 
         self.assertEqual(tf.shape(global_load_vector).numpy().tolist(),
                          [batch_size.numpy(), mesh.n_nodes, 1])
+
+
+class SolveDirichletTest(absltest.TestCase):
 
     def test_solve_dirichlet(self):
         mesh = tenfem.mesh.examples.square(4, 4)
@@ -96,6 +102,8 @@ class AssembleLocalStiffnessMatrixTest(absltest.TestCase):
 
         np.testing.assert_allclose(u_bnd, bnd_vals)
 
+
+class LinearEllipticOperatorTest(absltest.TestCase):
     def test_linear_elliptic_opeartor(self):
         mesh = tenfem.mesh.examples.square(4, 4)
         diffusion_coefficient = tfkl.Dense(1, activation='softplus')
