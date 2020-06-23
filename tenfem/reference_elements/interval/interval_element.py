@@ -127,3 +127,20 @@ class IntervalElement(BaseReferenceElement):
         return 0.5 * tf.reduce_sum(f_at_nodes
                                    * quad_weights
                                    * volumes[..., tf.newaxis], axis=[-1, -2])
+
+    def isomap(self, nodes, canonical_coordinates):
+        """
+
+        Returns:
+            pushfwd_shape_fn_grad: The gradient of shape functions in
+              the physical coordinate system. A tensor of shape
+              `[1, n_elements, n, 2]`
+        """
+        jacobian_det = nodes[..., 1, 0] - nodes[..., 0, 0]
+
+        shape_fn_vals, shape_fn_grad = self.shape_function(canonical_coordinates)
+
+        pushfwd_shape_fn_grad = shape_fn_grad / jacobian_det[..., tf.newaxis, tf.newaxis]
+        pushfwd_shape_fn_grad = pushfwd_shape_fn_grad[tf.newaxis, ...]
+
+        return shape_fn_vals, pushfwd_shape_fn_grad, jacobian_det
