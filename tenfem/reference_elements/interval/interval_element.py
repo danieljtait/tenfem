@@ -56,6 +56,10 @@ class IntervalElement(BaseReferenceElement):
                 'Currently only linear shape functions',
                 'supported on IntervalElements')))
 
+    def get_quadrature_nodes(self, mesh: BaseMesh) -> tf.Tensor:
+        """ Alias into get_mesh_quadrature_nodes for compatability with layers. """
+        return self.get_mesh_quadrature_nodes(mesh)[0]
+
     def get_mesh_quadrature_nodes(self,
                                   mesh: BaseMesh) -> Tuple[tf.Tensor, tf.Tensor]:
         """ Get the gaussian quadrature nodes of the mesh,
