@@ -67,7 +67,7 @@ def assemble_local_convection_matrix(transport_vector_field: tf.Tensor,
     # inner product with the transport vector field and the shape function gradients
     local_convec = tf.reduce_sum(transport_vector_field[..., tf.newaxis, :]
                                  * pf_shape_fn_grad, axis=-1)
-    local_convec = (local_convec[..., tf.newaxis]
-                    * shape_fn[..., tf.newaxis, :])
+    local_convec = (local_convec[..., tf.newaxis, :]
+                    * shape_fn[..., tf.newaxis])
 
     return tf.reduce_sum(local_convec * wxarea[..., tf.newaxis, tf.newaxis], axis=-3)
