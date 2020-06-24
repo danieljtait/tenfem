@@ -75,6 +75,12 @@ class MatlabTrimeshGenerator:
                                                      nargout=3))
         eng.quit()
 
+        # clean up the tmp file
+        try:
+            os.remove(path)
+        except OSError as e:
+            print("Error: {} -- {}.".format(e.filename, e.strerror))
+
         # additional postprocessing on d to convert from matlab indexing to
         # python indexing
         t[:3, :] -= 1
