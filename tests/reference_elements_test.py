@@ -28,7 +28,14 @@ class IntervalElementTest(absltest.TestCase):
         self.assertRaises(NotImplementedError, lambda: interval_elem_clz(degree=2))
 
         p1_interval_element = interval_elem_clz(degree=1)
-        print(p1_interval_element.element_dim)
+
+        r = np.linspace(0., 1., 5)  # points on the canonical element
+        shape_fn_vals, shape_fn_vals_grad = p1_interval_element.shape_function(r)
+
+        self.assertEqual(tf.shape(shape_fn_vals).numpy().tolist(),
+                         [len(r), p1_interval_element.n_shape_functions])
+        self.assertEqual(tf.shape(shape_fn_vals_grad).numpy().tolist(),
+                         [1, len(r), p1_interval_element.n_shape_functions])
 
 
 class TriangleElementTest(absltest.TestCase):
