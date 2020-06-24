@@ -135,6 +135,23 @@ class SolveDirichletTest(absltest.TestCase):
         np.testing.assert_allclose(u_bnd, bnd_vals)
 
 
+class AssembleConvectionMatrixTest(absltest.TestCase):
+
+    def test_assemble_local_convection_matrix(self):
+        mesh = tenfem.mesh.examples.square(5, 5)
+        mesh = tenfem.mesh.triangle.convert_linear_to_quadratic(mesh)
+        tri_element = tenfem.reference_elements.TriangleElement(degree=2)
+
+        batch_shape = [3, 1, 4]
+        tvf = tf.ones(batch_shape + [mesh.n_elements, tri_element.element_dim, 2])
+
+        local_convec_mat = tenfem.fem.assemble_local_convection_matrix(
+            tvf, mesh, tri_element)
+
+        self.assertEqual(batch_shape,
+                         tf.shape(local_convec_mat).numpy()[:3].tolist())
+
+
 class LinearEllipticOperatorTest(absltest.TestCase):
     def test_linear_elliptic_opeartor(self):
         mesh = tenfem.mesh.examples.square(4, 4)
