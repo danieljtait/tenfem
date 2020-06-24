@@ -58,4 +58,5 @@ def circle(hmax: float, dtype: tf.DType = tf.float32) -> TriangleMesh:
     thetas = np.linspace(0., 2*np.pi)
     verts = np.array([np.sin(thetas), np.cos(thetas)]).T.tolist()
     mesh = MatlabTrimeshGenerator.from_verts(verts, hmax, dtype=dtype)
+    mesh.add_matplotlib_tri()
     return mesh
