@@ -47,16 +47,26 @@ def assemble_local_convection_matrix(transport_vector_field: tf.Tensor,
         element: A `tenfem.reference_element.BaseReferenceElement`
           object describing the elements of the mesh.
 
+    Returns:
+        local_convection_matrix: A float `Tensor` of shape
+          `[..., n_elements, element_dim, element_dim]`
+          giving the local values of the convection matrix over
+          elements.
+
     """
     element_nodes = tf.gather(mesh.nodes, mesh.elements)
 
     wts, quad_nodes = element.get_quadrature_nodes_and_weights()
-    _, pf_shape_fn_grad, jac_det = element.isomap(element_nodes, quad_nodes)
+    shape_fn, pf_shape_fn_grad, jac_det = element.isomap(element_nodes, quad_nodes)
 
     wxarea = jac_det * wts / 2
 
-    # taking the inner product with the transport vector field and the
-    # shape function gradients
-    # first we move the shape function gradient to the back to agree
-    # with how the transport_vector_field is presented.
+    # swap shape fun grads to agree with transport_vector_field
     pf_shape_fn_grad = _move_first_axis_to_last(pf_shape_fn_grad)
+
+    # inner product with the transport vector field and the shape function gradients
+    local_convec = tf.reduce_sum(transport_vector_field[..., tf.newaxis, :]
+                                 * pf_shape_fn_grad, axis=-1)
+    local_convec = (local_convec[..., tf.newaxis]
+                    * shape_fn[..., tf.newaxis, :])
+    return tf.reduce_sum(local_convec * wxarea[..., tf.newaxis, tf.newaxis], axis=-3)
