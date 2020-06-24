@@ -15,7 +15,8 @@
 """ Use matlab functions to provide meshes. """
 import tensorflow as tf
 import numpy as np
-from functools import lru_cache
+from tenfem.mesh import TriangleMesh
+
 
 # string of the Matlab function
 # to triangulate a region.
@@ -33,7 +34,6 @@ meshfrompolyverts = (
 class MatlabTrimeshGenerator:
 
     @staticmethod
-    @lru_cache
     def from_verts(verts, hmax, dtype=tf.float32):
         """ Creates a mesh of the polygon defined by verts using the matlab engine
 
@@ -80,4 +80,7 @@ class MatlabTrimeshGenerator:
         t[:3, :] -= 1
         e[:2, :] -= 1
 
-        return p, e, t
+        t = np.asarray(t, dtype=np.int32)
+        e = np.asarray(e, dtype=np.int32)
+
+        return TriangleMesh(p.T, t[:3].T, e[:2].T)

@@ -16,6 +16,8 @@ from .triangle_mesh import TriangleMesh
 from scipy.spatial import Delaunay
 import numpy as np
 import tensorflow as tf
+from functools import lru_cache
+from .matlab_trimesh_generator import MatlabTrimeshGenerator
 
 
 def square(nx, ny, dtype=tf.float32):
@@ -41,3 +43,19 @@ def square(nx, ny, dtype=tf.float32):
 
     return tri_mesh
 
+
+@lru_cache(maxsize=8)
+def circle(hmax: float, dtype: tf.DType = tf.float32) -> TriangleMesh:
+    """ Create a `TriangleMesh` of a circular domain.
+
+    Args:
+        hmax: Average maximum edge length of triangles in the mesh.
+        dtype: The datatype of the mesh nodes. Default `float32`
+
+    Return:
+        mesh: A `TriangleMesh` object of a circular domain.
+    """
+    thetas = np.linspace(0., 2*np.pi)
+    verts = np.array([np.sin(thetas), np.cos(thetas)]).T.tolist()
+    mesh = MatlabTrimeshGenerator.from_verts(verts, hmax, dtype=dtype)
+    return mesh
