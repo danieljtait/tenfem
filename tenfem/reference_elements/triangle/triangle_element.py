@@ -118,7 +118,9 @@ class TriangleElement(BaseReferenceElement):
             shape_fn_vals: The values of the shape functions at the canonical coordinates. This
               will be a tensor of shape [p, element_dim]
             pushfwd_shape_fn_grad: The gradient of shape functions in the physical coordinates. This
-              will be a tensor of shape `[2, ..., n, ]`
+              will be a tensor of shape `[2, ..., n_canonical_coords, n_shape_functions]` where
+              `n_canonical_coords = tf.shape(canonical_coordinates)[-2]` and `n_shape_functions`
+              depends on the degree of the element.
             jacobian_det: A float `Tensor` of shape `[..., n]` giving the jacobian
               determinant of the coordinate transform at each canonical coordinate.
         """
