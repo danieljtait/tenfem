@@ -27,6 +27,9 @@ class IntervalElementTest(absltest.TestCase):
         interval_elem_clz = tenfem.reference_elements.IntervalElement
         self.assertRaises(NotImplementedError, lambda: interval_elem_clz(degree=2))
 
+        p1_interval_element = interval_elem_clz(degree=1)
+        print(p1_interval_element.element_dim)
+
 
 class TriangleElementTest(absltest.TestCase):
 

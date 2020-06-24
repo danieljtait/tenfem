@@ -51,6 +51,7 @@ class IntervalElement(BaseReferenceElement):
 
         if degree == 1:
             self._shape_fn = p1_shape_fn
+            self._n_shape_functions = 2
         else:
             raise NotImplementedError('-'.join((
                 'Currently only linear shape functions',

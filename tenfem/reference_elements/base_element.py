@@ -58,3 +58,8 @@ class BaseReferenceElement(tf.Module):
     def quadrature_order(self):
         """ The order of Gaussian quadrature performed on the reference element. """
         return self._quadrature_order
+
+    @property
+    def n_shape_functions(self):
+        """ Number of shape functions on the element. """
+        return self._n_shape_functions
