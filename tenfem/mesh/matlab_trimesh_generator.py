@@ -83,4 +83,4 @@ class MatlabTrimeshGenerator:
         t = np.asarray(t, dtype=np.int32)
         e = np.asarray(e, dtype=np.int32)
 
-        return TriangleMesh(p.T, t[:3].T, e[:2].T)
+        return TriangleMesh(p.T, t[:3].T, e[:2].T, dtype=dtype)
