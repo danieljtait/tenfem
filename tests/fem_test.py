@@ -156,12 +156,14 @@ class LinearEllipticOperatorTest(absltest.TestCase):
     def test_linear_elliptic_opeartor(self):
         mesh = tenfem.mesh.examples.square(4, 4)
         diffusion_coefficient = tfkl.Dense(1, activation='softplus')
+        transport_vector_field = tfkl.Dense(2)
         source = tfkl.Dense(1)
 
         def build_op_to_fail():
             return tenfem.layers.LinearEllipticOperator(
                 diffusion_coefficient,
                 source,
+                transport_vector_field=transport_vector_field,
                 reference_element=element)
 
         self.assertRaises(ValueError, build_op_to_fail)
