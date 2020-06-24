@@ -17,6 +17,21 @@ import tensorflow as tf
 import tenfem
 
 
+def _move_first_axis_to_last(arr):
+    """ Moves the first axis of a tensor to the last.
+
+    Args:
+        arr: An array like of arbitrary shape.
+
+    Returns:
+        swapped_arr: An array such that `swapped_arr[..., i] == arr[i, ...]`
+
+    """
+    arr_rank = tf.rank(arr)
+    perm = tf.concat((tf.range(1, arr_rank), tf.zeros([1], dtype=tf.int32)), axis=0)
+    return tf.transpose(arr, perm=perm)
+
+
 def assemble_local_convection_matrix(transport_vector_field: tf.Tensor,
                                      mesh: tenfem.mesh.BaseMesh,
                                      element: tenfem.reference_elements.BaseReferenceElement) -> tf.Tensor:
@@ -24,7 +39,7 @@ def assemble_local_convection_matrix(transport_vector_field: tf.Tensor,
 
     Args:
         transport_vector_field: A float `Tensor` of shape
-          `[2, ..., n_elements, element_dim]` giving the values
+          `[..., n_elements, element_dim, 2]` giving the values
           of the transport vector field at each of the mesh quadrature
           nodes.
         mesh: A `tenfem.mesh.BaseMesh` object representing the finite
@@ -42,4 +57,6 @@ def assemble_local_convection_matrix(transport_vector_field: tf.Tensor,
 
     # taking the inner product with the transport vector field and the
     # shape function gradients
-    # first we move the shape function gradient to the back
+    # first we move the shape function gradient to the back to agree
+    # with how the transport_vector_field is presented.
+    pf_shape_fn_grad = _move_first_axis_to_last(pf_shape_fn_grad)
