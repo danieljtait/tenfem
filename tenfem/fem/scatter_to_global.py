@@ -34,6 +34,7 @@ def scatter_matrix_to_global(local_values: tf.Tensor,
         global_matrix: A rank 3 float tensor of shape [batch_size, n_nodes, n_nodes]
           obtained by scattering the local matrix into the global matrix according to
           row-wise Cartesian products of mesh.element indices.
+
     """
     # ToDo: work out shape checking
     # assert tf.rank(local_values) == 4
