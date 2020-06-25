@@ -19,7 +19,7 @@ import tenfem
 
 def assemble_local_stiffness_matrix(scalar_diffusion_coefficient: tf.Tensor,
                                     mesh: tenfem.mesh.BaseMesh,
-                                    element) -> tf.Tensor:
+                                    element: tenfem.reference_elements.BaseReferenceElement) -> tf.Tensor:
     """ Function to assemble the local stiffness matrix over a mesh.
 
     ToDo(dan): Implement tensor valued diffusion coefficients.

@@ -32,8 +32,8 @@ def assemble_local_load_vector(source: tf.Tensor,
           describing the elements of the mesh.
 
     Returns:
-        local_load_vector: A `Tensor` of shape `[..., n_elements, element_dim]` giving
-          the values of the local load vectors.
+        local_load_vector: A `Tensor` of shape `[..., n_elements, element_dim]`
+          giving the values of the local load vectors.
     """
     element_nodes = tf.gather(mesh.nodes, mesh.elements)
 
