@@ -24,12 +24,12 @@ def assemble_local_load_vector(source: tf.Tensor,
 
     Args:
         source: A float `Tensor` of shape `[..., n_elements, n_quadrature_nodes]`
-          giving the values of the scalar source function at the `n_quadrature_nodes`
-          of each element.
-        mesh: A `tenfem.fem.BaseMesh` object secifying the finite element mesh of the
-          region.
-        element: A `tenfem.fem.reference_element.Element` object describing the elements
-          of the mesh.
+          giving the values of the scalar source function at the
+          `n_quadrature_nodes` of each element.
+        mesh: A `tenfem.fem.BaseMesh` object specifying the finite element mesh of
+          the region.
+        element: A `tenfem.fem.reference_element.BaseReferenceElement` object
+          describing the elements of the mesh.
 
     Returns:
         local_load_vector: A `Tensor` of shape `[..., n_elements, element_dim]` giving
