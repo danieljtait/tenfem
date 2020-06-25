@@ -56,7 +56,7 @@ def scatter_vector_to_global(local_values: tf.Tensor,
           of the local load vector for each shape function.
         elements: An rank 3 integer tensor giving the elements of the mesh of shape
           `[batch_size, num_elements, element_dim]`.
-        n_nodes: integer, the number of nodes of the output matrix.
+        n_nodes: integer, the number of nodes of the output vector.
 
     Returns:
         global_load_vector: A float `Tensor` of shape
