@@ -19,7 +19,7 @@ import tenfem
 
 def assemble_local_load_vector(source: tf.Tensor,
                                mesh: tenfem.mesh.BaseMesh,
-                               element) -> tf.Tensor:
+                               element: tenfem.reference_elements.BaseReferenceElement) -> tf.Tensor:
     """ Assembles the load vector from the source function values at quadrature nodes.
 
     Args:
