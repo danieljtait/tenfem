@@ -13,14 +13,14 @@
 # limitations under the License.
 # ============================================================================
 """ Solve a FEM problem with Dirichlet boundary conditions. """
-from typing import Union
+from typing import Union, Tuple
 import tensorflow as tf
 
 
 def dirichlet_form_linear_system(lhs_matrix: tf.Tensor,
                                  rhs_vector: tf.Tensor,
                                  node_types: tf.Tensor,
-                                 boundary_vals: Union[None, tf.Tensor] = None):
+                                 boundary_vals: Union[None, tf.Tensor] = None) -> Tuple[tf.Tensor, tf.Tensor]:
     """Forms the linear system Ax = b of the Dirichlet problem.
 
     Forms the matrix A and vector b in the dirichlet problem A @ u = b
@@ -31,8 +31,8 @@ def dirichlet_form_linear_system(lhs_matrix: tf.Tensor,
     of this function.
 
     Args:
-        lhs_matrix: A float `Tensor`, the left-hand side of the system of equations. Must
-          be a rank 2 square tensor.
+        lhs_matrix: A float `Tensor`, the left-hand side of the system of equations.
+          Must be a rank 2 square tensor.
         rhs_vector: A float `Tensor`, the right-hand side of the system of equations.
         node_types: An integer `Tensor` giving the node types of the mesh, should be a
           rank 1 tensor of length equation to lhs_matrix.shape[0].
@@ -60,7 +60,7 @@ def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
                                        load: tf.Tensor,
                                        node_types: str,
                                        boundary_vals: Union[tf.Tensor, None],
-                                       method: str = 'lu'):
+                                       method: str = 'lu') -> tf.Tensor:
     """ Solves the linear FEM problem with Dirichlet boundary conditions.
 
     Args:
@@ -78,6 +78,11 @@ def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
           on the boundary.
         method: A python string identifying the method used to solve the linear
           system.
+
+    Returns:
+        solution: A float `Tensor` of shape `[n_nodes, 1]` giving the nodal
+          coefficient vector of the FEM solution to the Dirichlet problem.
+
     """
     stiffness_interior, load_interior = dirichlet_form_linear_system(
         bilinear_form,

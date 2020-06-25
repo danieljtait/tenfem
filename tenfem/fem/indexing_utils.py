@@ -16,7 +16,7 @@ import tensorflow as tf
 
 
 def get_batched_element_indices(elements: tf.Tensor,
-                                validate_args: bool = False):
+                                validate_args: bool = False) -> tf.Tensor:
     """ Creates the complete set of local to global indices by batching down the final dimension.
 
     Returns:
@@ -42,7 +42,7 @@ def get_batched_element_indices(elements: tf.Tensor,
     return indices
 
 
-def get_batched_vector_element_indices(elements):
+def get_batched_vector_element_indices(elements: tf.Tensor) -> tf.Tensor:
     """ Get the indices for batch scattering of local vectors.
 
     Args:
