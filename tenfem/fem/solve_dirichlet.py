@@ -58,7 +58,7 @@ def dirichlet_form_linear_system(lhs_matrix: tf.Tensor,
 
 def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
                                        load: tf.Tensor,
-                                       node_types: str,
+                                       node_types: tf.Tensor,
                                        boundary_vals: Union[tf.Tensor, None],
                                        method: str = 'lu') -> tf.Tensor:
     """ Solves the linear FEM problem with Dirichlet boundary conditions.

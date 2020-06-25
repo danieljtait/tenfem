@@ -46,8 +46,8 @@ def assemble_local_stiffness_matrix(scalar_diffusion_coefficient: tf.Tensor,
 
     # ak_q.shape = [n_elements, len(wts), element_dim, element_dim]
 
-    # scalar diff coeff should be shape mesh.get_quadrature_nodes()[..., 0] = [n_elements, len(wts)]
+    # scalar diff coefficient should be shape
+    # mesh.get_quadrature_nodes()[..., 0] = [n_elements, len(wts)]
     ak_q = ak_q * scalar_diffusion_coefficient[..., tf.newaxis, tf.newaxis]
 
     return tf.reduce_sum(ak_q * wxarea[..., tf.newaxis, tf.newaxis], axis=-3)
-
