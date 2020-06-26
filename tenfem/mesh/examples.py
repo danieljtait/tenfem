@@ -74,7 +74,8 @@ def star(hmax: float, rot_deg: float = 30, dtype: tf.DType = tf.float32):
         mesh: A `TriangleMesh` object of a star shaped domain.
     """
     import re
-    from matplotlib import Path, transforms
+    from matplotlib.path import Path
+    from matplotlib import transforms
 
     def svg_parse(path):
         """ svg_parse code from https://matplotlib.org/3.1.1/gallery/showcase/firefox.html """
