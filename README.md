@@ -19,3 +19,9 @@ from a FEM solver, enabling greater collaboration between classical
 engineering approaches motivated by fundamental physical principles, and
 the flexible, data-driven methods that have fuelled modern machine learning.
  
+ ## PDEs as mechanistically inspired convolutions
+ 
+ GP Source     | Transport Vector Field | GP Solution
+:--------:|:----------------:|:-----------:
+![](./images/source.png) | ![](./images/tvf.png) | ![](./images/gp_pde.png)
+ 
