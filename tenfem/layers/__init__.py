@@ -14,8 +14,9 @@
 # ============================================================================
 """ Layers to implement the FEM method. """
 from .base_fem_layer import BaseFEMLayer
-from .assemble_stiffness_matrix import AssembleStiffnessMatrix
 from .assemble_load_vector import AssembleLoadVector
+from .assemble_stiffness_matrix import AssembleStiffnessMatrix
+from .assemble_convection_matrix import AssembleConvectionMatrix
 from .mesh_provider import MeshProvider
 from .solve_dirichlet_layer import SolveDirichletProblem
 from .triangle_mesh_interpolator import TriangleMeshInterpolator
