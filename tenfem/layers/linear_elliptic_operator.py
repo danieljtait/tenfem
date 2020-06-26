@@ -88,6 +88,11 @@ class LinearEllipticOperator(BaseFEMLayer):
         return self._diffusion_coefficient
 
     @property
+    def transport_vector_field(self):
+        """ Transport vector field. """
+        return self._transport_vector_field
+
+    @property
     def source(self):
         """ Source term of the elliptic operator. """
         return self._source
@@ -113,6 +118,18 @@ class LinearEllipticOperator(BaseFEMLayer):
             diffusion_coeff_vals, mesh, element)
         local_stiffness_mat = tf.reshape(local_stiffness_mat,
                                          [-1, mesh.n_elements, element_dim, element_dim])
+
+        if self.transport_vector_field:
+            transport_vector_field_vals = tf.reshape(
+                self.transport_vector_field(flat_mesh_quadrature_nodes),
+                [-1, mesh.n_elements, element_dim, 2])
+
+            local_convection_mat = tenfem.fem.assemble_local_convection_matrix(
+                transport_vector_field_vals, mesh, element)
+            local_convection_mat = tf.reshape(local_convection_mat, [-1, mesh.n_elements, element_dim, element_dim])
+
+            # add the convection term to the local stiffness matrix
+            local_stiffness_mat += local_convection_mat
 
         batch_size = tf.shape(local_stiffness_mat)[0]
         elements = tf.tile(mesh.elements[tf.newaxis, ...], [batch_size, 1, 1])
