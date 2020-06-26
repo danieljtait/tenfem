@@ -25,3 +25,9 @@ the flexible, data-driven methods that have fuelled modern machine learning.
 :--------:|:----------------:|:-----------:
 ![](./images/source.png) | ![](./images/tvf.png) | ![](./images/gp_pde.png)
  
+ In the when the partial differential equations (PDEs) take the form of linear
+ elliptic operators we can convolve an input Gaussian process, for example a
+ source field of pollutants, with a mechanistically inspired PDE which describes
+ how these pollutants are spread and transported, to create an output GP which
+ can encode these prior knowledge, without losing the appealing flexibility
+ of the GP framework! 
