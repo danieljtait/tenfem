@@ -90,3 +90,59 @@ class TaperedSubmeshProvider(MeshProvider):
 
         # convert to ragged tensor
         self.mesh_neighbours = tf.ragged.constant([x.numpy() for x in self.mesh_neighbours])
+
+
+    def get_submesh(self, vertex):
+        # get the interior nodes and boundary nodes
+        interior_nodes = tf.gather(self.tapered_neighbours, vertex)
+        boundary_nodes = tf.gather(self.mesh_neighbours, interior_nodes)
+        boundary_nodes = boundary_nodes.flat_values
+        boundary_nodes = tf.sets.difference(boundary_nodes[None, ...], interior_nodes[None, ...]).values
+
+        def _get_elements(int_nodes, elements):
+            """ numpy implementation of finding the elements used. """
+            is_mini_patch_element = np.any(np.isin(elements, int_nodes), axis=1)
+            return elements[is_mini_patch_element]
+
+        mini_patch_elements = tf.numpy_function(_get_elements,
+                                                [interior_nodes, self.mesh.elements],
+                                                Tout=tf.int32)
+
+        node_indices = tf.concat((interior_nodes, boundary_nodes), axis=0)
+
+        def _gather_and_remap_inds(node_indices, elements):
+            node_map = {item: i for i, item in enumerate(node_indices)}
+            mapped_elems = np.array(
+                list(map(lambda i: node_map[i], elements.flatten())))
+            mapped_elems = np.reshape(mapped_elems, elements.shape).astype(np.int32)
+            return mapped_elems
+
+        # re-base the node indexes
+        mini_patch_elements = tf.numpy_function(_gather_and_remap_inds,
+                                                [node_indices, mini_patch_elements],
+                                                Tout=tf.int32)
+        mini_patch_nodes = tf.gather(self.mesh.nodes, node_indices)
+
+        n_int_nodes = tf.shape(interior_nodes)[0]
+        n_bnd_nodes = tf.shape(boundary_nodes)[0]
+
+        node_types = tf.concat([tf.zeros(n_int_nodes, dtype=tf.int32),
+                                tf.ones(n_bnd_nodes, dtype=tf.int32)], axis=0)
+        if self.return_precond_matrix:
+            precond_matrix = self.precond_matrix
+            precond_submesh = tf.gather(
+                tf.gather(precond_matrix, node_indices, axis=1), node_indices, axis=0)
+            return mini_patch_nodes, mini_patch_elements, node_types, precond_submesh
+        else:
+            return mini_patch_nodes, mini_patch_elements, node_types
+
+    def call(self, inputs):
+        """ Returns the tensor representation of a tapered sub-mesh. """
+        vertex = tf.random.uniform(shape=[], maxval=self.mesh.n_nodes, dtype=tf.int32)
+        if self.return_precond_matrix:
+            nodes, elements, node_types, precond_matrix = self.get_submesh(vertex)
+            mesh_tensor_repr = (nodes, elements, node_types)
+            return mesh_tensor_repr, precond_matrix
+        else:
+            mesh_tensor_repr = self.get_submesh(vertex)
+            return mesh_tensor_repr
