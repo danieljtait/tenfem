@@ -58,3 +58,35 @@ class TaperedSubmeshProvider(MeshProvider):
             Tout=tf.int32)
         self.tapered_neighbours = tf.ragged.constant(
             [x.numpy() for x in self.tapered_neighbours])
+
+    def _build_mesh_neighborhood(self):
+        """ Compute the FEM neighbor structure implied by the mesh. """
+
+        def maybe_add_neighbor(i, j, neighbors):
+            """ Utility function to maybe add neighbors. """
+            try:
+                nei = neighbors[i]
+                if j not in nei:
+                    nei.append(j)
+            except KeyError:
+                neighbors[i] = [j]
+
+        def _compute_mesh_neighbours(elems, n_nodes):
+            """ numpy implementation. """
+            neighbors = {}
+            for e in elems:
+                for j in range(elems.shape[1]):
+                    nxt = e[j + 1] if j < (elems.shape[1] - 1) else e[0]
+                    maybe_add_neighbor(e[j], nxt, neighbors)
+                    maybe_add_neighbor(nxt, e[j], neighbors)
+            nei_list = [np.array(list(neighbors[i])).astype(np.int32)
+                        for i in range(n_nodes)]
+            return nei_list
+
+        self.mesh_neighbours = tf.numpy_function(
+            _compute_mesh_neighbours,
+            [self.mesh.elements, self.mesh.n_nodes],
+            Tout=tf.int32)
+
+        # convert to ragged tensor
+        self.mesh_neighbours = tf.ragged.constant([x.numpy() for x in self.mesh_neighbours])
