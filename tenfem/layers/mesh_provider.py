@@ -13,6 +13,7 @@
 # limitations under the License.
 """ Layers to provide meshes. """
 import tensorflow as tf
+import tenfem
 from tenfem.layers import BaseFEMLayer
 
 
@@ -48,12 +49,12 @@ class MeshProvider(BaseFEMLayer):
 
         self.return_precond_matrix = return_precond_matrix
         if self.return_precond_matrix:
-            raise NotImplementedError
-            # self._build_precond_matrix()
+            self._build_precond_matrix()
 
-    # def _build_precond_matrix(self):
-    #     self.precond_matrix = tenfem.fem.StiffnessMatrixAssembler.assemble(
-    #        tf.ones([1]), self.mesh)
+    def _build_precond_matrix(self):
+        self.precond_matrix = tenfem.layers.StiffnessMatrixAssembler.assemble(
+           lambda x: tf.ones_like(x)[..., 0],
+           self.reference_element)
 
     def call(self, inputs):
         mesh_tensor_repr = self.mesh.get_tensor_repr()

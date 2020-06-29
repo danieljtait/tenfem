@@ -24,6 +24,7 @@ class TaperedSubmeshProvider(MeshProvider):
                  mesh,
                  reference_element,
                  threshold,
+                 return_precond_matrix=False,
                  name='tapered_submesh_provider'):
         """ Create a TaperedSubmeshProvider instance.
 
@@ -34,9 +35,12 @@ class TaperedSubmeshProvider(MeshProvider):
               describing the type of element in the mesh.
             threshold: A float giving the radius of the each of the tapered
               neighborhoods.
+            return_precond_matrix: A boolean indicating whether the call method
+              should also return a pre-conditioning matrix.
         """
         super(TaperedSubmeshProvider, self).__init__(mesh,
                                                      reference_element,
+                                                     return_precond_matrix=return_precond_matrix,
                                                      name=name)
         self.threshold = tf.constant(threshold)
 
