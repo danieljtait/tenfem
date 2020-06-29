@@ -13,6 +13,7 @@
 # limitations under the License.
 """ Layers to provide tapered sub-meshes. """
 import tensorflow as tf
+import numpy as np
 from tenfem.layers import MeshProvider
 
 
@@ -30,3 +31,30 @@ class TaperedSubmeshProvider(MeshProvider):
         self.threshold = tf.constant(threshold)
 
     def _build_tapered_neighbors(self):
+        def _compute_tapered_neighbors(x, threshold, boundary_nodes):
+            """ Numpy implementation of a function to compute the neighbours.
+            Args:
+                x: nodes
+                threshold: tapered radius
+                boundary_nodes: boudnary nodes of larger mesh
+
+            Returns:
+                tapered_neighbors: list of [..., ]
+
+            """
+            r = np.sum(x*x, axis=1)[:, None]
+            pwd = r - 2*x.dot(x.T) + r.T
+            n_nodes = np.shape(x)[-2]
+            enumerated_inds = np.arange(n_nodes).astype(np.int32)
+            tapered_neighbors = [enumerated_inds[pwd[i] < threshold] for i in enumerated_inds]
+            # need to remove the boundary nodes of the master mesh from tapered neighbours
+            tapered_neighbors = [np.setdiff1d(item, boundary_nodes)
+                                 for item in tapered_neighbors]
+            return tapered_neighbors
+
+        self.tapered_neighbours = tf.numpy_function(
+            _compute_tapered_neighbors,
+            [self.mesh.nodes, self.threshold, self.mesh.boundary_node_indices],
+            Tout=tf.int32)
+        self.tapered_neighbours = tf.ragged.constant(
+            [x.numpy() for x in self.tapered_neighbours])
