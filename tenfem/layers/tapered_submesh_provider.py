@@ -15,6 +15,7 @@
 import tensorflow as tf
 import numpy as np
 from tenfem.layers import MeshProvider
+from tenfem.mesh.utils import get_boundary_elements
 
 
 class TaperedSubmeshProvider(MeshProvider):
@@ -138,13 +139,17 @@ class TaperedSubmeshProvider(MeshProvider):
         node_types = tf.concat([tf.zeros(n_int_nodes, dtype=tf.int32),
                                 tf.ones(n_bnd_nodes, dtype=tf.int32)], axis=0)
 
+        boundary_elements = get_boundary_elements(mini_patch_elements,
+                                                  node_types,
+                                                  self.reference_element)
+
         if self.return_precond_matrix:
             precond_matrix = self.precond_matrix
             precond_submesh = tf.gather(
                 tf.gather(precond_matrix, node_indices, axis=1), node_indices, axis=0)
-            return mini_patch_nodes, mini_patch_elements, node_types, precond_submesh
+            return mini_patch_nodes, mini_patch_elements, node_types, boundary_elements, precond_submesh
         else:
-            return mini_patch_nodes, mini_patch_elements, node_types
+            return mini_patch_nodes, mini_patch_elements, node_types, boundary_elements
 
     def call(self, inputs):
         """ Returns the tensor representation of a tapered sub-mesh. """
