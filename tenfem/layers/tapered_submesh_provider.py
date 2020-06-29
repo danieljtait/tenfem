@@ -29,4 +29,4 @@ class TaperedSubmeshProvider(MeshProvider):
                                                      name=name)
         self.threshold = tf.constant(threshold)
 
-    def _build_tapered_neighbours(self):
+    def _build_tapered_neighbors(self):
