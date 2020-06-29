@@ -24,7 +24,16 @@ class TaperedSubmeshProvider(MeshProvider):
                  reference_element,
                  threshold,
                  name='tapered_submesh_provider'):
-        """ Create a TaperedSubmeshProvider instance. """
+        """ Create a TaperedSubmeshProvider instance.
+
+        Args:
+            mesh: A `tenfem.mesh.BaseMesh` instance giving the mesh of
+              the whole domain.
+            reference_element: A `tenfem.reference_elements.BaseReferenceElement`
+              describing the type of element in the mesh.
+            threshold: A float giving the radius of the each of the tapered
+              neighborhoods.
+        """
         super(TaperedSubmeshProvider, self).__init__(mesh,
                                                      reference_element,
                                                      name=name)
@@ -128,6 +137,7 @@ class TaperedSubmeshProvider(MeshProvider):
 
         node_types = tf.concat([tf.zeros(n_int_nodes, dtype=tf.int32),
                                 tf.ones(n_bnd_nodes, dtype=tf.int32)], axis=0)
+
         if self.return_precond_matrix:
             precond_matrix = self.precond_matrix
             precond_submesh = tf.gather(

@@ -150,3 +150,32 @@ class TriangleElement(BaseReferenceElement):
                                            dSdy[tf.newaxis, ...]), axis=0)
 
         return shape_fn_vals, pushfwd_shape_fn_grad, jacobian_det
+
+    def orientate_element_indices(self, mesh):
+        """ Reindex `elements` to give the a right hand orientated closed
+        path around the boundary
+
+        Args:
+            mesh: A `tenfem.fem.TriangleMesh` instance. With attribute
+              `elements` n integer tensor of shape `[..., element_dim]` giving
+              the indices of element nodes. With the first `q` indices on
+              the boundary of the element.
+        Returns:
+            elements: A reordering of elements such that the first `q` indices
+              form an open path around the element.
+        """
+        if self.element_dim == 3:
+            # on the linear element we assume that the elements are already
+            # orientated
+            return mesh.elements
+        elif self.element_dim == 6:
+            elem = mesh.elements
+            elem = tf.concat((elem[..., 0, tf.newaxis],
+                              elem[..., 5, tf.newaxis],
+                              elem[..., 1, tf.newaxis],
+                              elem[..., 3, tf.newaxis],
+                              elem[..., 2, tf.newaxis],
+                              elem[..., 4, tf.newaxis]), axis=-1)
+            return elem
+        else:
+            raise NotImplementedError("Only linear and quadratic elements currently implemented.")

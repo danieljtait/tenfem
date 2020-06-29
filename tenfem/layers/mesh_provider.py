@@ -24,7 +24,14 @@ class MeshProvider(BaseFEMLayer):
                  padding_element=-1,
                  return_precond_matrix=False,
                  name='mesh_provider'):
-        """ Create a MeshProvider instance. """
+        """ Create a MeshProvider instance.
+
+        Args:
+            mesh: A `tenfem.mesh.BaseMesh` instance giving the mesh of
+              the whole domain.
+            reference_element: A `tenfem.reference_elements.BaseReferenceElement`
+              describing the type of element in the mesh.
+        """
         super(MeshProvider, self).__init__(reference_element,
                                            name=name)
         element_dim = tf.shape(mesh.elements)[-1]
