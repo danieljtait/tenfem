@@ -52,9 +52,9 @@ class MeshProvider(BaseFEMLayer):
             self._build_precond_matrix()
 
     def _build_precond_matrix(self):
-        self.precond_matrix = tenfem.layers.StiffnessMatrixAssembler.assemble(
+        self.precond_matrix = tenfem.layers.AssembleStiffnessMatrix(
            lambda x: tf.ones_like(x)[..., 0],
-           self.reference_element)
+           reference_element=self.reference_element)(self.mesh.get_tensor_repr())[0]
 
     def call(self, inputs):
         mesh_tensor_repr = self.mesh.get_tensor_repr()

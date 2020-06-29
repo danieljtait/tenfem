@@ -159,8 +159,8 @@ class TaperedSubmeshProvider(MeshProvider):
         """ Returns the tensor representation of a tapered sub-mesh. """
         vertex = tf.random.uniform(shape=[], maxval=self.mesh.n_nodes, dtype=tf.int32)
         if self.return_precond_matrix:
-            nodes, elements, node_types, precond_matrix = self.get_submesh(vertex)
-            mesh_tensor_repr = (nodes, elements, node_types)
+            nodes, elements, bnd_elements, node_types, precond_matrix = self.get_submesh(vertex)
+            mesh_tensor_repr = (nodes, elements, bnd_elements, node_types)
             return mesh_tensor_repr, precond_matrix
         else:
             mesh_tensor_repr = self.get_submesh(vertex)
