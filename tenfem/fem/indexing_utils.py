@@ -20,13 +20,15 @@ def get_batched_element_indices(elements: tf.Tensor,
     """ Creates the complete set of local to global indices by batching down the final dimension.
 
     Args:
-        elements: An integer tensor of shame `[batch_size, mesh.n_elements, element_dim]` giving the
-          indices into `mesh.nodes` of each of the `element_dim` nodes which define a single element
-          of the mesh.
+        elements: An integer tensor of shame `[batch_size, mesh.n_elements, element_dim]`
+          giving the indices into `mesh.nodes` of each of the `element_dim` nodes which
+          define a single element of the mesh.
 
     Returns:
         batched_element_indices: An integer tensor of shape
-          `[num_batches*num_elements*element_dim**2, 1+element_dim]`.
+          `[num_batches*num_elements*element_dim**2, 1+element_dim]` which give
+          the indices to scatter the local stiffness matrix into the global
+          stiffness matrix.
     """
     if validate_args:
         if tf.rank(elements) != 3:
