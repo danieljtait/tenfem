@@ -124,6 +124,17 @@ class BaseMesh(tf.Module):
         self._nodes = tf.cast(self._nodes, dtype)
 
     def get_tensor_repr(self) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor, tf.Tensor]:
+        """ Returns a representation of the mesh as a Tensor
+
+        Returns:
+            nodes: A float `Tensor` giving the nodes of the mesh.
+            elements: An integer `Tensor` giving the elements of the mesh
+            boundary_elements: An integer `Tensor` which gives the
+              `boundary_elements` of the mesh
+            node_types: An integer `Tensor` of length `n_nodes`, which gives the type
+              of each node in the mesh. `node_types==0` for nodes in the interior and
+              `node_types==1` for nodes on boundary.
+        """
         nodes = self.nodes
         elements = self.elements
         boundary_elements = self.boundary_elements
