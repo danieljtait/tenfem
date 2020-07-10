@@ -62,7 +62,8 @@ def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
                                        load: tf.Tensor,
                                        node_types: tf.Tensor,
                                        boundary_vals: Union[tf.Tensor, None],
-                                       method: str = 'lu') -> tf.Tensor:
+                                       method: str = 'lu',
+                                       cg_kwargs: Union[Dict, None] = None) -> tf.Tensor:
     """ Solves the linear FEM problem with Dirichlet boundary conditions.
 
     Args:
@@ -80,6 +81,8 @@ def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
           on the boundary.
         method: A python string identifying the method used to solve the linear
           system.
+        cg_kwargs: A dictionary of arguments to be passed to the
+          `tf.linalg.experimental.conjugate_gradient` solver.
 
     Returns:
         solution: A float `Tensor` of shape `[n_nodes, 1]` giving the nodal
@@ -95,6 +98,15 @@ def solve_dirichlet_form_linear_system(bilinear_form: tf.Tensor,
     if method == 'lu':
         lu, p = tf.linalg.lu(stiffness_interior)
         uo = tf.linalg.lu_solve(lu, p, load_interior)
+    elif method == 'cg':
+        cg_kwargs = {} if cg_kwargs is None else cg_kwargs
+        bilinear_form_op = tf.linalg.LinearOperatorFullMatrix(bilinear_form,
+                                                              is_self_adjoint=True,
+                                                              is_positive_definite=True)
+        cg_state = tf.linalg.experimental.conjugate_gradient(bilinear_form,
+                                                             load_interior[..., 0], **cg_kwargs)
+        # ToDo: Add checks on the result of cg_state
+        uo = cg_state.x[..., tf.newaxis]
     else:
         raise NotImplementedError('Unrecognised method {}'.format(method))
 
