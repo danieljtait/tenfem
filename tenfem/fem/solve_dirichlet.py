@@ -40,8 +40,10 @@ def dirichlet_form_linear_system(lhs_matrix: tf.Tensor,
           in which case it is equivalent to a vector of zeros. Default is `None`.
 
     Returns:
-        lhs_matrix: `tf.Tensor`
-        rhs_tensor: `tf.Tensor`.
+        lhs_matrix: A rank 2 float `Tensor` of the nodes in `lhs_matrix` which correspond to
+          the interior nodes of the problem.
+        rhs_tensor: A float `tf.Tensor` giving the right-hand side vector of the
+          system of equations which corresponds to the interior nodes of the problem.
     """
     int_nodes = tf.where(node_types == 0)[:, 0]
     bnd_nodes = tf.where(node_types == 1)[:, 0]
