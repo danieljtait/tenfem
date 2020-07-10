@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """ Solve a FEM problem with Dirichlet boundary conditions. """
-from typing import Union, Tuple
+from typing import Union, Tuple, Dict
 import tensorflow as tf
 
 
